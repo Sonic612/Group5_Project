@@ -1,0 +1,39 @@
+import java.sql.Connection;
+
+public class DCOperator {
+	//The Data Center Operator Class
+	private String user;
+	private String pass;
+	private Connection dbConn;
+	private String dbHost;
+	private String dbUser;
+	private String dbPass;
+	
+	DCOperator(String a, String b){
+		
+	}
+	public void createConn(String a, String b, String c){
+		
+	}
+	private void addMember(Member mem){
+		
+	}
+	private void delMember(memID mem){
+		
+	}
+	private void updateMember(Member mem){
+		
+	}
+	private void addProvider(Provider prov){
+		
+	}
+	private void delProvider(provID prov){
+		
+	}
+	private void updateProvider(Provider prov){
+		
+	}
+	private void termConn(){
+		
+	}
+}
