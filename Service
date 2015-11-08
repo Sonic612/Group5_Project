@@ -1,0 +1,77 @@
+public class Service {
+
+	    private int servCode;
+	    private String servName;
+	    private double servFee;
+
+
+    	// --- Contructor For Service ---
+
+	    public Service(int inCode,String inName, Double inAmt){
+	          this.servCode = inCode;
+	          this.servName = inName;
+	          this.servFee = inAmt;
+      	    }
+
+	    private void setServCode(int inCode){
+	          this.servCode = inCode;
+       	    }
+
+	    public int getServCode(){
+	          return this.servCode;
+            }
+
+	    private void setServName(String inName){
+	          this.servName = inName;
+            }
+
+  	    public String getServName(){
+	          return this.servName;
+            }
+
+	    private void setServFee(double inAmt){
+	          this.servFee = inAmt;
+            }
+
+	    public double getServFee(){
+          	return this.servFee;
+      	    }
+}public class Service {
+
+	    private int servCode;
+	    private String servName;
+	    private double servFee;
+
+
+    	// --- Contructor For Service ---
+
+	    public Service(int inCode,String inName, Double inAmt){
+	          this.servCode = inCode;
+	          this.servName = inName;
+	          this.servFee = inAmt;
+      	    }
+
+	    private void setServCode(int inCode){
+	          this.servCode = inCode;
+       	    }
+
+	    public int getServCode(){
+	          return this.servCode;
+            }
+
+	    private void setServName(String inName){
+	          this.servName = inName;
+            }
+
+  	    public String getServName(){
+	          return this.servName;
+            }
+
+	    private void setServFee(double inAmt){
+	          this.servFee = inAmt;
+            }
+
+	    public double getServFee(){
+          	return this.servFee;
+      	    }
+}
