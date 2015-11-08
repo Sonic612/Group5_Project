@@ -1,10 +1,9 @@
-/*
-*Description:
-*
-*Author: Sean Fyock
-*/
 import java.sql.Connection;
 
+/**
+ * @author sfyock
+ *
+ */
 public class DCOperator {
 	//The Data Center Operator Class
 	private String user;
@@ -14,30 +13,60 @@ public class DCOperator {
 	private String dbUser;
 	private String dbPass;
 	
+	/**
+	 * @param a
+	 * @param b
+	 */
 	DCOperator(String a, String b){
 		
 	}
+	/**
+	 * @param a
+	 * @param b
+	 * @param c
+	 */
 	public void createConn(String a, String b, String c){
 		
 	}
+	/**
+	 * @param mem
+	 */
 	private void addMember(Member mem){
 		
 	}
+	/**
+	 * @param mem
+	 */
 	private void delMember(memID mem){
 		
 	}
+	/**
+	 * @param mem
+	 */
 	private void updateMember(Member mem){
 		
 	}
+	/**
+	 * @param prov
+	 */
 	private void addProvider(Provider prov){
 		
 	}
+	/**
+	 * @param prov
+	 */
 	private void delProvider(provID prov){
 		
 	}
+	/**
+	 * @param prov
+	 */
 	private void updateProvider(Provider prov){
 		
 	}
+	/**
+	 * 
+	 */
 	private void termConn(){
 		
 	}
