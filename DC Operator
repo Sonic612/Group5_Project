@@ -1,7 +1,7 @@
 import java.sql.Connection;
 
 /**
- * @description: This is the Data Center Opterator Class. This controls the DC Operator functions.
+ * This is the Data Center Operator Class. This controls the DC Operator functions.
  * 
  * @author sfyock
  */
