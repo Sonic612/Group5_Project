@@ -1,12 +1,11 @@
 import java.sql.Connection;
 
 /**
-*
+ * @description: This is the Data Center Opterator Class. This controls the DC Operator functions.
+ * 
  * @author sfyock
- *
  */
 public class DCOperator {
-	//The Data Center Operator Class
 	private String user;
 	private String pass;
 	private Connection dbConn;
