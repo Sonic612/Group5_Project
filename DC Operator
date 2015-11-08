@@ -1,8 +1,6 @@
 /*
 *Description:
 *
-*Bugs: None Known
-*
 *Author: Sean Fyock
 */
 import java.sql.Connection;
