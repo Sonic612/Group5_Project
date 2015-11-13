@@ -1,0 +1,6 @@
+CREATE TABLE tbl_Services
+(
+	serv_code INTEGER,
+	Name VARCHAR(25),
+	Fee DECIMAL(5,2)
+);
