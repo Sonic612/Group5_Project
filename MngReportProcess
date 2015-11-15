@@ -23,11 +23,11 @@ public class MngReportProcess implements ReportProcess{
 		this.dbPass = dbPass;
 	}
 	
-	private String printReport(int, Date date){					//need to find out what is the integer variable
+	private String printReport(int id, String date){
 		
 	}
 	
-	private void printReport(Date date){
+	private void printReport(String date){
 		
 	}
 	
@@ -35,7 +35,7 @@ public class MngReportProcess implements ReportProcess{
 		
 	}
 	
-	 private void saveReport(String){							//again String variable?
+	 private void saveReport(){	
 		 
 	 }
 
