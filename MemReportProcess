@@ -24,11 +24,11 @@ public class MemReportProcess implements ReportProcess{
 		this.dbPass = dbPass;
 	}
 	
-	private String printReport(int, Date date){					//need to find out what is the integer parameter
+	private String printReport(int id, String date){
 		
 	}
 	
-	private void printReport(Date date){
+	private void printReport(String date){
 		
 	}
 	
@@ -36,7 +36,7 @@ public class MemReportProcess implements ReportProcess{
 		
 	}
 	
-	 private void saveReport(String){							//again String parameter?
+	 private void saveReport(){
 		 
 	 }
 
