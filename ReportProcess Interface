@@ -1,0 +1,44 @@
+package project;
+
+import java.sql.Connection;
+import java.sql.Date;
+
+/**
+ * Interface for defining the structure for different classes that will be generating the required report and then saving them in DB.
+ * 
+ * @author sgill
+ * 
+ */
+public interface ReportProcess{
+	//Constant Variables
+	/**
+	 * A constant string variable to store the name of the Data Table to which data extracted will be written to.
+	 */
+	String TARGET_DBTBL = "place holder text";
+	
+	//Methods	
+	
+	/**
+	 * @param id, int variable
+	 * @param startDate, Date variable that signifies the start date of the week for which the report is to be computed.
+	 * @return String, report information in the required format contained in a single string variable.
+	 */
+	String printReport(int id,Date startDate);
+	
+	/**
+	 * @param startDateDate variable that signifies the start date of the week for which the report is to be computed.
+	 * @return String, report information in the required format contained in a single string variable.
+	 */
+	String printReport(Date startDate);
+	
+	/**
+	 * Terminates the connection to the database.
+	 */
+	void termConnection();
+	
+	/**
+	 * Write the report string from printReport() into the listed TARGET_DBTBL.
+	 */
+	void saveReport(String contents);
+	
+}
