@@ -1,3 +1,9 @@
+/**    
+*Creates a manager report process class that implements ReportProcess    
+* 
+* @author Lan Le   
+*/   
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
