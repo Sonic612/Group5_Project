@@ -1,0 +1,19 @@
+import java.sql.Connection;
+
+/**
+ * This is an interface for the SQL called Record Process. This records
+ * ...
+ * 
+ * @author seanp_000
+ */
+public interface RecordProcess {
+	Connection dbConn = null;
+	String dbHost =  null;
+	String dbUser =  null;
+	String dbPass = null;
+	
+	/**
+	 * 
+	 */
+	void termCon();
+}
