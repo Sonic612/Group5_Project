@@ -1,0 +1,59 @@
+package Project;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public class MngReportProcess implements ReportProcess{
+	final String TARGET_SERVER = "jdbc:sqlserver://sonic612.database.windows.net:1433;";
+	final String TARGET_DB = "ChocAn";
+	
+	private Connection dbConn;
+	private String dbHost;
+	private String dbUser;
+	private String dbPass;
+	public Connection dbTarget;
+	private String reportString;
+	
+	public MngReportProcess(String user, String password){
+		init(user, password);
+	}
+	
+	private void init(String user, String password){
+    	this.dbUser = user;
+    	this.dbPass = password;
+    	this.connString = TARGET_SERVER + ";" 
+                + "database="+ TARGET_DB + ";"
+                + "user=" + dbUser + ";"
+                + "password={" + dbPass + "};"
+                + "encrypt=true;"
+                + "trustServerCertificate=false;"
+                + "hostNameInCertificate=*.database.windows.net;"
+                + "loginTimeout=60;";
+  
+
+    	try {
+            connection = DriverManager.getConnection(connString);
+    	}
+    	catch(SQLException e){
+    		System.out.println(e.getErrorCode()+ " " + e.getMessage());
+    	}
+    }
+	
+	private String printReport(){
+		
+	}
+	
+	private void printReport(String date){
+		
+	}
+	
+	private void termConn(){
+		
+	}
+	
+	 private void saveReport(){							
+		 
+	 }
+
+}

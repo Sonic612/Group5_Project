@@ -2,37 +2,89 @@ package Project;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import com.microsoft.sqlserver.jdbc.*;
+
+/**
+ * @author lle
+ *
+ */
 
 public class MemReportProcess implements ReportProcess{
-	private Connection dbConn;
-	private String dbHost;
+	final String TARGET_SERVER = "jdbc:sqlserver://sonic612.database.windows.net:1433;";
+	final String TARGET_DB = "ChocAn";
+	
+	private Connection connection;
+	private String connString;
 	private String dbUser;
 	private String dbPass;
 	public Connection dbTarget;
 	private String reportString;
 	
-	public MemReportProcess(String dbHost, String dbUser, String dbPass){
-		super();
-		this.dbHost = dbHost;
-		this.dbUser = dbUser;
-		this.dbPass = dbPass;
+	public MemReportProcess(String user, String password){
+		init(user, password);
 	}
 	
-	private String printReport(int id, String date){
+	private void init(String user, String password){
+    	this.dbUser = user;
+    	this.dbPass = password;
+    	this.connString = TARGET_SERVER + ";" 
+                + "database="+ TARGET_DB + ";"
+                + "user=" + dbUser + ";"
+                + "password={" + dbPass + "};"
+                + "encrypt=true;"
+                + "trustServerCertificate=false;"
+                + "hostNameInCertificate=*.database.windows.net;"
+                + "loginTimeout=60;";
+  
+
+    	try {
+            connection = DriverManager.getConnection(connString);
+    	}
+    	catch(SQLException e){
+    		System.out.println(e.getErrorCode()+ " " + e.getMessage());
+    	}
+    }
+
+	@Override
+	public void computeReport(int id, String startDate) {
+		// TODO Auto-generated method stub
 		
 	}
-	
-	private void printReport(String date){
+
+	@Override
+	public void computeReport(String startDate) {
+		// TODO Auto-generated method stub
 		
 	}
-	
-	private void termConn(){
+
+	@Override
+	public String printReport() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void termConnection() {
+		try {
+			connection.close();
+		} catch (SQLException e) {
+			System.out.println(e.getErrorCode()+ " " + e.getMessage());
+		}
+	}
+
+	@Override
+	public void saveReport() {
+		// TODO Auto-generated method stub
 		
 	}
-	
-	 private void saveReport(){
-		 
-	 }
 
 }
