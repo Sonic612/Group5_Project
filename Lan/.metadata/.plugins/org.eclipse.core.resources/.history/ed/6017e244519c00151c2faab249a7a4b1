@@ -19,7 +19,7 @@ import com.microsoft.sqlserver.jdbc.*;
  */
 
 public class MngReportProcess implements ReportProcess{
-	final String TARGET_SERVER = "jdbc:sqlserver://sonic613.database.windows.net:1433;";
+	final String TARGET_SERVER = "jdbc:sqlserver://sonic612.database.windows.net:1433;";
 	final String TARGET_DB = "ChocAn";
 	
 	private Connection connection;
@@ -31,9 +31,7 @@ public class MngReportProcess implements ReportProcess{
 	
 	final String WRITE_STMT = "INSERT INTO tbl_MngReport(record_date,Content) VALUES(";
 	String repString = "";
-	/*ResultSet resultProvSet;
-    ResultSet resultEnctrSet;
-    ResultSet resultFCount, resultFSum;*/
+	
 	public MngReportProcess(String user, String password){
 		init(user, password);
 	}

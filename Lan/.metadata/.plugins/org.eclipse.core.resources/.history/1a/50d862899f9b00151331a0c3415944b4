@@ -19,7 +19,7 @@ import com.microsoft.sqlserver.jdbc.*;
  */
 
 public class MngReportProcess implements ReportProcess{
-	final String TARGET_SERVER = "jdbc:sqlserver://sonic613.database.windows.net:1433;";
+	final String TARGET_SERVER = "jdbc:sqlserver://sonic612.database.windows.net:1433;";
 	final String TARGET_DB = "ChocAn";
 	
 	private Connection connection;
@@ -29,11 +29,6 @@ public class MngReportProcess implements ReportProcess{
 	public Connection dbTarget;
 	private String reportString;
 	
-	final String WRITE_STMT = "INSERT INTO tbl_MngReport(record_date,Content) VALUES(";
-	String repString = "";
-	/*ResultSet resultProvSet;
-    ResultSet resultEnctrSet;
-    ResultSet resultFCount, resultFSum;*/
 	public MngReportProcess(String user, String password){
 		init(user, password);
 	}
@@ -103,15 +98,7 @@ public class MngReportProcess implements ReportProcess{
 
 	@Override
 	public void saveReport() {
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date date = new Date();
-		Statement insertStmt;
-		try {
-			insertStmt = connection.createStatement();
-			insertStmt.execute(WRITE_STMT + dateFormat.format(date) + "," + repString + ");");
-		} catch (SQLException e) {
-			System.out.println(e.getErrorCode()+ " " + e.getMessage());
-		}	
+		// TODO Auto-generated method stub
 		
 	}
 

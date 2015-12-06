@@ -1,6 +1,3 @@
-/**
- * 
- */
 package Project;
 
 import java.sql.Connection;
@@ -15,31 +12,33 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.microsoft.sqlserver.jdbc.*;
+
 /**
- * @author sgill
+ * @author lle
  *
  */
-public class SPReportProcess implements ReportProcess{
+
+public class MemReportProcess implements ReportProcess{
 	final String TARGET_SERVER = "jdbc:sqlserver://sonic613.database.windows.net:1433;";
 	final String TARGET_DB = "ChocAn";
 	
-	String connString;
-	String dbUser;
-	String dbPass;
+	private Connection connection;
+	private String connString;
+	private String dbUser;
+	private String dbPass;
+	public Connection dbTarget;
+	private String reportString;
 	
-	Connection connection;
-    final String WRITE_STMT = "INSERT INTO tbl_ProvReport(record_date,Content) VALUES(";
-    ResultSet resultProvSet;
+	final String WRITE_STMT = "INSERT INTO tbl_MemReport(record_date,Content) VALUES(";
+	ResultSet resultMemSet;
     ResultSet resultEnctrSet;
-    ResultSet resultFCount, resultFSum;
-    
-    String repString = "";
-        
-    public SPReportProcess(String user, String password){
-    	init(user,password);
-    }
-    
-    private void init(String user, String password){
+	String repString = "";
+	
+	public MemReportProcess(String user, String password){
+		init(user, password);
+	}
+	
+	private void init(String user, String password){
     	this.dbUser = user;
     	this.dbPass = password;
     	this.connString = TARGET_SERVER + ";" 
@@ -59,7 +58,7 @@ public class SPReportProcess implements ReportProcess{
     		System.out.println(e.getErrorCode()+ " " + e.getMessage());
     	}
     }
-    
+
 	@Override
 	public void computeReport(int id, String date) {
 		//Checking date format
@@ -75,31 +74,25 @@ public class SPReportProcess implements ReportProcess{
 		catch (ParseException e) {	
 			e.printStackTrace();
 		}
-
+		
 		//SQL queries
-		String provHeader = "SELECET Prov_Name, Prov ID, Prov_Address, "
-					+ "Prov_City, Prov_State, Zip "
-					+ "\nFROM tbl_Provider "
-					+ "\nWHERE Prov_ID = ;";
-		
-		String EnctrHeader = "SELECET tbl_Encounters.Enctr_date, tbl_Encounters.record_date,"
-				+ " tbl_Member.Mem_Name, tbl_Encounters.Mem_ID, tbl_Encounters.serv_code, tbl_Services.SERV_fee"
+		//Member name, Member number, Member street address, Member city, Member state, Member ZIP code
+		//Date of service, Provider name, Service name
+		String memHeader = "SELECET Mem_Name, Mem_ID, Mem_Address, "
+				+ "Mem_City, Mem_State, Zip "
+				+ "\nFROM tbl_Member "
+				+ "\nWHERE Mem_ID = ;";
+	
+		String EnctrHeader = "SELECET tbl_Encounters.Enctr_date, "
+				+ " tbl_Provider.Prov_Name, tbl_Services.serv_name"
 				+ "\nFROM tbl_Encounters "
-				+ "\nJOIN tbl_Member \n  ON tbl_Encounters.Mem_ID = tbl_Member.Mem_ID"
+				+ "\nJOIN tbl_Provider \n  ON tbl_Encounters.Prov_ID = tbl_Provider.Prov_ID"
 				+ "\nJOIN tbl_Services \n ON tbl_Encounters.serv_code = tbl_Services.serv_code"
-				+ "\nWHERE Prov_ID = ? AND record_date BETWEEN ? AND ?;";
-		
-		String countQuery = "SELECET COUNT(UID)"
-				+ "\nFROM tbl_Encounters"
-				+ "\nWHERE Prov_ID= ? AND record_date BETWEEN ? AND ?;";
-		
-		String sumQuery = "SELECET SUM(SERV_fee)"
-				+ "\nFROM tbl_Encounters"
-				+ "\nWHERE Prov_ID = ? AND record_date BETWEEN ? AND ?;";
+				+ "\nWHERE Mem_ID = ? AND record_date BETWEEN ? AND ?;";
 		
 		try {
 			Statement Stmt1 = connection.createStatement();
-			this.resultProvSet = Stmt1.executeQuery(provHeader + id);
+			this.resultMemSet = Stmt1.executeQuery(memHeader + id);
 			
 			PreparedStatement Stmt2 = connection.prepareStatement(EnctrHeader);
 			Stmt2.setInt(1, id);
@@ -107,43 +100,33 @@ public class SPReportProcess implements ReportProcess{
 			Stmt2.setDate(1, (java.sql.Date) new Date());
 			this.resultEnctrSet = Stmt2.executeQuery();
 			
-			PreparedStatement Stmt3 = connection.prepareStatement(countQuery);
-			Stmt3.setInt(1, id);
-			Stmt3.setDate(1, (java.sql.Date) strDate);
-			Stmt3.setDate(1, (java.sql.Date) new Date());
-			this.resultFCount = Stmt3.executeQuery();
-			
-			PreparedStatement Stmt4 = connection.prepareStatement(sumQuery);
-			Stmt4.setInt(1, id);
-			Stmt4.setDate(1, (java.sql.Date) strDate);
-			Stmt4.setDate(1, (java.sql.Date) new Date());
-			this.resultFSum = Stmt4.executeQuery();
-			
 		} catch (SQLException e) {
 			System.out.println(e.getErrorCode()+ " " + e.getMessage());
 		}	
 	}
-	
+
 	@Override
-	public String printReport(){
-		
-		String providerStr = ""; 
-		String enctrStr = ""; 
-		String finalStr = "";
-		
+	public void computeReport(String startDate) {
+		throw new UnsupportedOperationException("Alternate form of same method valid, member ID is required");
+	}
+
+	@Override
+	public String printReport() {
+		String memStr = ""; 
+		String enctrStr = "";
 		
 		//Result Sets parsed into a single report string
 		try {
-			while(resultProvSet!=null){
-				String name = resultProvSet.getString("Prov_Name");
-				int number = resultProvSet.getInt("Prov_ID");
-				String address = resultProvSet.getString("Prov_Address");
-				String city = resultProvSet.getString("Prov_City");
-				String state = resultProvSet.getString("Prov_State");
-				String zip = resultProvSet.getString("Zip");
+			while(resultMemSet!=null){
+				String name = resultMemSet.getString("Prov_Name");
+				int number = resultMemSet.getInt("Prov_ID");
+				String address = resultMemSet.getString("Prov_Address");
+				String city = resultMemSet.getString("Prov_City");
+				String state = resultMemSet.getString("Prov_State");
+				String zip = resultMemSet.getString("Zip");
 				
-				providerStr = "Provider Name : " + name + "/nProvider Number : " + number + "/nProvider Street Address : "
-						+ address + "/nProvider City : " + city + "/nProvider State  :" + state + "Provider ZIP : " + zip;	
+				memStr = "Member Name : " + name + "/nMember Number : " + number + "/nMember Street Address : "
+						+ address + "/nMember City : " + city + "/nMember State  :" + state + "Member ZIP : " + zip;	
 			}
 		} catch (SQLException e) {
 			System.out.println(e.getErrorCode()+ " " + e.getMessage());
@@ -155,10 +138,8 @@ public class SPReportProcess implements ReportProcess{
 
 				String enctrDateStr = resultEnctrSet.getDate("Enctr_Date").toString();
 				String recDateStr = sdf.format(resultEnctrSet.getTimestamp("record_date")).toString();
-				String memNameStr = resultEnctrSet.getString("Mem_Name");
-				int memNumStr = resultEnctrSet.getInt("Mem_ID");
-				int servCodeStr = resultEnctrSet.getInt("serv_code");
-				float fee = resultEnctrSet.getFloat("SERV_fee");
+				String provNameStr = resultEnctrSet.getString("Prov_Name");
+				String servNameStr = resultEnctrSet.getString("Mem_ID");
 				
 				enctrStr = "\n-------Service Details--------\nDate of Service : " + enctrDateStr + "/nRecord Date and Time : " +
 						recDateStr + "/nMember Name : " + memNameStr + "/nMember Number: " + memNumStr + "/nService Code  :" + servCodeStr 
@@ -193,11 +174,6 @@ public class SPReportProcess implements ReportProcess{
 	}
 
 	@Override
-	public void computeReport(String startDate) {
-		throw new UnsupportedOperationException("Alternate form of same method valid, provider ID is required");
-	}
-
-	@Override
 	public void termConnection() {
 		try {
 			connection.close();
@@ -208,7 +184,6 @@ public class SPReportProcess implements ReportProcess{
 
 	@Override
 	public void saveReport() {
-		
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date date = new Date();
 		Statement insertStmt;
@@ -217,8 +192,8 @@ public class SPReportProcess implements ReportProcess{
 			insertStmt.execute(WRITE_STMT + dateFormat.format(date) + "," + repString + ");");
 		} catch (SQLException e) {
 			System.out.println(e.getErrorCode()+ " " + e.getMessage());
-		}		
+		}	
+		
 	}
 
 }
-
