@@ -1,29 +1,61 @@
-import java.util.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
- * Writes the SP record to the database
  * @author jmilinsk
  *
  */
 public class SPRecordProcess {
 	
-	//private Connection dbConn; Commented out until Connection class is created
-	private String dbHost;
-	private String dbUser;
-	private String dbPass;
+	final String TARGET_SERVER = "jdbc:sqlserver://sonic612.database.windows.net:1433;";
+	final String TARGET_DB = "ChocAn";
+	
+	String connString;
+	String dbUser;
+	String dbPass;
+	
+	Connection connection;
 	public Date TIMESTMP_FRMT;
 	private String timestamp;
 	
 /**
- * @param dbHost
- * @param dbUser
- * @param dbPass
+ * @param user
+ * @param password
  */
-public SPRecordProcess(String dbHost, String dbUser, String dbPass){
-	this.dbHost = dbHost;
-	this.dbUser = dbUser;
-	this.dbPass = dbPass;
+public SPRecordProcess(String user, String password){
+	init(user, password);
 }
+
+/**
+ * @param user
+ * @param password
+ */
+private void init(String user, String password){
+	this.dbUser = user;
+	this.dbPass = password;
+	this.connString = TARGET_SERVER + ";" 
+            + "database="+ TARGET_DB + ";"
+            + "user=" + dbUser + ";"
+            + "password={" + dbPass + "};"
+            + "encrypt=true;"
+            + "trustServerCertificate=false;"
+            + "hostNameInCertificate=*.database.windows.net;"
+            + "loginTimeout=60;";
+	try {
+        connection = DriverManager.getConnection(connString);
+	}
+	catch(SQLException e){
+		System.out.println(e.getErrorCode()+ " " + e.getMessage());
+	}
+}
+
 
 private void createTimeStmp(){
 	
@@ -38,11 +70,30 @@ private void createTimeStmp(){
  * @return
  */
 private String writeRecord(String provider, int prov_ID, int mem_ID, int serv_code, String memberName){
-	String written = "Record Written";
-	return written;
-	
+	Statement stmt = null;
+    String query = "INSERT INTO tbl_Encounters" +
+	"Values (provider, Provider.getProvID(), Member.getMemID(), Service.getServCode(), memberName)";
+    try {
+        stmt = connection.createStatement();
+        stmt.executeQuery(query);
+        termConnection();
+        return "Service has been written";
+    } catch (SQLException e) {
+		System.out.println(e.getErrorCode()+ " " + e.getMessage());
+		return "Service has not been written";
+	}
+}
+
+
+public void termConnection() {
+	try {
+		connection.close();
+	} catch (SQLException e) {
+		System.out.println(e.getErrorCode()+ " " + e.getMessage());
+	}
 }
 
 }
+
 
 
