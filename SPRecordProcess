@@ -72,7 +72,7 @@ private void createTimeStmp(){
 private String writeRecord(String provider, int prov_ID, int mem_ID, int serv_code, String memberName){
 	Statement stmt = null;
     String query = "INSERT INTO tbl_Encounters" +
-	"Values (provider, Provider.getProvID(), Member.getMemID(), Service.getServCode(), memberName)";
+	"Values (provider, prov_ID, mem_ID, serv_code, memberName)";
     try {
         stmt = connection.createStatement();
         stmt.executeQuery(query);
