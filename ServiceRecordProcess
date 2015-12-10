@@ -14,7 +14,7 @@ import java.util.Date;
  */
 public class ServiceRecordProcess {
 	
-	final String TARGET_SERVER = "jdbc:sqlserver://sonic612.database.windows.net:1433;";
+	final String TARGET_SERVER = "jdbc:sqlserver://sonic613.database.windows.net:1433;";
 	final String TARGET_DB = "ChocAn";
 	
 	String connString;
