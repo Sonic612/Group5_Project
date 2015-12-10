@@ -1,0 +1,75 @@
+package Project;
+
+import java.sql.Connection;
+
+/**
+ * This is the Data Center Operator Class. This controls the DC Operator functions.
+ * 
+ * @author sfyock
+ */
+public class DCOperator {
+	private String user;
+	private String pass;
+	private Connection dbConn;
+	private String dbHost;
+	private String dbUser;
+	private String dbPass;
+	
+	/**
+	 * @param username
+	 * @param password
+	 */
+	DCOperator(String username, String password){
+		
+	}
+	/**
+	 * @param a
+	 * @param b
+	 * @param c
+	 */
+	public void createConn(String a, String b, String c){
+		
+	}
+	/**
+	 * @param mem
+	 */
+	private void addMember(Member mem){
+		
+	}
+	/**
+	 * @param mem
+	 */
+	private void delMember(memID mem){
+		
+	}
+	/**
+	 * @param mem
+	 */
+	private void updateMember(Member mem){
+		
+	}
+	/**
+	 * @param prov
+	 */
+	private void addProvider(Provider prov){
+		
+	}
+	/**
+	 * @param prov
+	 */
+	private void delProvider(provID prov){
+		
+	}
+	/**
+	 * @param prov
+	 */
+	private void updateProvider(Provider prov){
+		
+	}
+	/**
+	 * 
+	 */
+	private void termConn(){
+		
+	}
+}
