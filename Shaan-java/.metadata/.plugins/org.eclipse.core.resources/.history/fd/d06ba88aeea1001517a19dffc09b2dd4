@@ -1,0 +1,28 @@
+package project;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Date;
+
+/**
+ * This is the interface for the SPRecordProcess.
+ * 
+ * @author sfyock
+ */
+public interface RecordProcess {
+	//Constants
+	String TARGET_SERVER = "jdbc:sqlserver://sonic613.database.windows.net:1433;";
+	String TARGET_DB = "ChocAn";;
+	
+	String connString =  null;
+	String dbUser =  null;
+	String dbPass = null;
+	
+	Connection dbConn = null;
+
+		
+	String DeleteRecord(int id);
+
+	void termConnection();
+	
+}

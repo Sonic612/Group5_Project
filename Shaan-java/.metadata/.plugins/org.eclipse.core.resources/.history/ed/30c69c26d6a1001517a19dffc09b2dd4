@@ -1,0 +1,128 @@
+package project;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+/**
+ * @author jmilinsk
+ *
+ */
+public class ServiceRecordProcess {
+	
+	final String TARGET_SERVER = "jdbc:sqlserver://sonic613.database.windows.net:1433;";
+	final String TARGET_DB = "ChocAn";
+	
+	private String connString;
+	private String dbUser;
+	private String dbPass;
+	
+	private Connection connection;
+	
+	final String WRITE_STMT = "INSERT INTO dbo.tbl_Services(serv_code,serv_name,SERV_fee) VALUES(?,?,?):";
+	//Prepared Statements
+	private PreparedStatement Stmt1;
+	
+	/**
+	 * @param user
+	 * @param password
+	 */
+	public ServiceRecordProcess(String user, String password){
+		init(user,password);
+	}
+
+	/**
+	 * @param user
+	 * @param password
+	 */
+	private void init(String user, String password){
+		this.dbUser = user;
+		this.dbPass = password;
+		this.connString = TARGET_SERVER + ";" 
+            + "database="+ TARGET_DB + ";"
+            + "user=" + dbUser + ";"
+            + "password={" + dbPass + "};"
+            + "encrypt=true;"
+            + "trustServerCertificate=false;"
+            + "hostNameInCertificate=*.database.windows.net;"
+            + "loginTimeout=60;";
+		try {
+			connection = DriverManager.getConnection(connString);
+            Stmt1 = connection.prepareStatement(WRITE_STMT);
+
+		} catch(SQLException e){
+			System.out.println(e.getErrorCode()+ " " + e.getMessage());
+		}
+	}
+
+	/**
+	 * @param serv
+	 * @return
+	 */
+	public void addService(Service serv){
+		try {
+			Stmt1.setInt(1, serv.getServCode());
+			Stmt1.setString(2, serv.getServName());
+			Stmt1.setFloat(3, (float) serv.getServFee());
+			Stmt1.executeQuery();
+		} catch (SQLException e) {
+			System.out.println(e.getErrorCode()+ " " + e.getMessage());
+		}	
+	}
+
+/**
+ * @param serv
+ * @return
+ */
+private String updService(Service serv){
+	Statement stmt = null;
+    String query = "UPDATE tbl_Services" +
+	"SET ('serv_name = serv.getName()', serv_fee = 'serv.getServFee()') +"
+	+ "WHERE serv_code = 'serv.getCode()'";
+    try {
+        stmt = connection.createStatement();
+        stmt.executeQuery(query);
+        termConnection();
+        return "Service has been updated";
+    } catch (SQLException e) {
+		System.out.println(e.getErrorCode()+ " " + e.getMessage());
+		return "Service has not been updated";
+	}
+}
+
+/**
+ * @param servCode
+ * @return
+ */
+private String delService(int servCode){
+	Statement stmt = null;
+    String query = "Delete from tbl_Services Where serv_code = 'servCode'";
+    try {
+        stmt = connection.createStatement();
+        stmt.executeQuery(query);
+        termConnection();
+        return "Service has been deleted";
+    } catch (SQLException e) {
+		System.out.println(e.getErrorCode()+ " " + e.getMessage());
+		return "Service has not been deleted";
+	}
+}
+
+
+public void termConnection() {
+	try {
+		connection.close();
+	} catch (SQLException e) {
+		System.out.println(e.getErrorCode()+ " " + e.getMessage());
+	}
+}
+
+}
+

@@ -73,7 +73,7 @@ public class DCOperator {
 		
 	}
 	
-	public String addMember(Member mem){
+	public void addMember(Member mem){
 		try {
 			Stmt1.setInt(1, mem.getMemID());
 			Stmt1.setString(2, mem.getMemFName() + mem.getMemLName());
@@ -84,27 +84,25 @@ public class DCOperator {
 			Stmt1.executeQuery();
 		} catch (SQLException e) {
 			if(e.getMessage().equals("The statement did not return a result set.")){
-				return "No ResultSet Returned!";
+				return;
 			}
-			return e.getErrorCode()+ " " + e.getMessage();
+			System.out.println(e.getErrorCode()+ " " + e.getMessage());
 		}
-		return "New Member Record Successfuly Added!";
 	}
 	
-	public String delMember(Member mem){
+	public void delMember(Member mem){
 		try {
 			Stmt2.setInt(1, mem.getMemID());
 			Stmt2.executeQuery();
 		} catch (SQLException e) {
 			if(e.getMessage().equals("The statement did not return a result set.")){
-				return "No ResultSet Returned!";
+				return;
 			}
-			return e.getErrorCode()+ " " + e.getMessage();
+			System.out.println(e.getErrorCode()+ " " + e.getMessage());
 		}
-		return "Member Record Successfuly Deleted!";
 	}
 	
-	public String updateMember(Member mem){
+	public void updateMember(Member mem){
 		try {
 			Stmt3.setInt(1, mem.getMemID());
 			Stmt3.setString(2, mem.getMemFName() + mem.getMemLName());
@@ -116,16 +114,15 @@ public class DCOperator {
 			Stmt3.executeQuery();
 		} catch (SQLException e) {
 			if(e.getMessage().equals("The statement did not return a result set.")){
-				return "No ResultSet Returned!";
+				return;
 			}
-			return e.getErrorCode()+ " " + e.getMessage();
+			System.out.println(e.getErrorCode()+ " " + e.getMessage());
 		}
-		return "Member Record Successfuly Updated!";
 	}
 	/**
 	 * @param prov
 	 */
-	public String addProvider(Provider prov){
+	public void addProvider(Provider prov){
 		try {
 			Stmt4.setInt(1, prov.getProvID());
 			Stmt4.setString(2, prov.getProvName());
@@ -136,31 +133,29 @@ public class DCOperator {
 			Stmt4.executeQuery();
 		} catch (SQLException e) {
 			if(e.getMessage().equals("The statement did not return a result set.")){
-				return "No ResultSet Returned!";
+				return;
 			}
-			return e.getErrorCode()+ " " + e.getMessage();
+			System.out.println(e.getErrorCode()+ " " + e.getMessage());
 		}
-		return "New Provider Record Successfuly Added!";
 	}
 	/**
 	 * @param prov
 	 */
-	public String delProvider(Provider prov){
+	public void delProvider(Provider prov){
 		try {
 			Stmt5.setInt(1, prov.getProvZip());
 			Stmt5.executeQuery();
 		} catch (SQLException e) {
 			if(e.getMessage().equals("The statement did not return a result set.")){
-				return "No ResultSet Returned!";
+				return;
 			}
-			return e.getErrorCode()+ " " + e.getMessage();
+			System.out.println(e.getErrorCode()+ " " + e.getMessage());
 		}
-		return "Provider Record Successfuly Deleted!";
 	}
 	/**
 	 * @param prov
 	 */
-	public String updateProvider(Provider prov){
+	public void updateProvider(Provider prov){
 		try {
 			Stmt6.setInt(1, prov.getProvID());
 			Stmt6.setString(2, prov.getProvName());
@@ -172,11 +167,10 @@ public class DCOperator {
 			Stmt6.executeQuery();
 		} catch (SQLException e) {
 			if(e.getMessage().equals("The statement did not return a result set.")){
-				return "No ResultSet Returned!";
+				return;
 			}
-			return e.getErrorCode()+ " " + e.getMessage();
+			System.out.println(e.getErrorCode()+ " " + e.getMessage());
 		}
-		return "Provider Record Successfuly Updated!";
 	}
 	/**
 	 * 

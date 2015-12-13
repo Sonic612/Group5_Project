@@ -1,0 +1,104 @@
+package project;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+/**
+ * @author jmilinsk
+ *
+ */
+public class SPRecordProcess implements RecordProcess{
+	
+	final String TARGET_SERVER = "jdbc:sqlserver://sonic612.database.windows.net:1433;";
+	final String TARGET_DB = "ChocAn";
+	//Declaring JDBC object
+	private String connString;
+	private String dbUser;
+	private String dbPass;
+	
+	private Connection connection;
+    private PreparedStatement Stmt1;
+
+	//SQL queries
+    final String WRITE_STMT = "INSERT INTO dbo.tbl_Encounters(Prov_ID,Mem_ID,serv_code,record_date,Enctr_date) VALUES(?,?,?,?,?);";
+    
+	/**
+	 * @param user
+	 * @param password
+	 */
+	public SPRecordProcess(String user, String password){
+		init(user, password);
+	}
+
+	/**
+	 * @param user
+	 * @param password
+    */
+	private void init(String user, String password){
+		this.dbUser = user;
+		this.dbPass = password;
+		this.connString = TARGET_SERVER + ";" 
+            + "database="+ TARGET_DB + ";"
+            + "user=" + dbUser + ";"
+            + "password={" + dbPass + "};"
+            + "encrypt=true;"
+            + "trustServerCertificate=false;"
+            + "hostNameInCertificate=*.database.windows.net;"
+            + "loginTimeout=60;";
+		
+		try {
+			connection = DriverManager.getConnection(connString);
+			Stmt1 = connection.prepareStatement(WRITE_STMT);
+		}
+		catch(SQLException e){
+			System.out.println(e.getErrorCode()+ " " + e.getMessage());
+		}
+	}
+
+
+	/**
+	 * @param provider
+	 * @param prov_ID
+	 * @param mem_ID
+	 * @param serv_code
+	 * @param memberName
+	 * @return
+	 */
+	public void writeRecord(int provID, int memID, int servcode, String date){
+		try {
+			Stmt1.setInt(1, provID);
+			Stmt1.setInt(2, memID);
+			Stmt1.setInt(3, servcode);
+			Stmt1.setDate(4, new java.sql.Date(System.currentTimeMillis()));
+			Stmt1.setDate(5, java.sql.Date.valueOf(date));
+			Stmt1.executeQuery();
+		} catch (SQLException e) {
+			if(e.getMessage().equals("The statement did not return a result set.")){
+				return;
+			}
+			System.out.println(e.getErrorCode()+ " " + e.getMessage());
+		}
+	}
+
+
+	public void termConnection() {
+		try {
+			connection.close();
+		} catch (SQLException e) {
+			System.out.println(e.getErrorCode()+ " " + e.getMessage());
+		}
+	}
+
+}
+
+
+
+
