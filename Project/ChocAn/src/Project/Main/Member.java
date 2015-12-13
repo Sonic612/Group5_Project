@@ -14,7 +14,6 @@ public class Member {
 	private int memZip;
 	private boolean isActive;
 	private boolean isSusp;
-	private String optStatusDesc;
 /**
  * @param memID
  * @param memFName
@@ -25,7 +24,6 @@ public class Member {
  * @param memZip
  * @param isActive
  * @param isSusp
- * @param optStatusDesc
  */
 public Member(int memID, String memFName, String memLName, String memStAddr,String memCity, String memSt, int memZip, boolean isActive, boolean isSusp){
 	
