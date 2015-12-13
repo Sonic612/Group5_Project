@@ -95,12 +95,6 @@ public boolean isSusp() {
 private void setSusp(boolean isSusp) {
 	this.isSusp = isSusp;
 }
-public String getOptStatusDesc() {
-	return optStatusDesc;
-}
-private void setOptStatusDesc(String optStatusDesc) {
-	this.optStatusDesc = optStatusDesc;
-}
 
 }
 
