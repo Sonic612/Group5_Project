@@ -12,7 +12,7 @@ import java.util.Date;
  * @author jmilinsk
  *
  */
-public class ServiceRecordProcess {
+public class SPRecordProcess {
 	
 	final String TARGET_SERVER = "jdbc:sqlserver://sonic613.database.windows.net:1433;";
 	final String TARGET_DB = "ChocAn";
@@ -22,13 +22,15 @@ public class ServiceRecordProcess {
 	String dbPass;
 	
 	Connection connection;
+	public Date TIMESTMP_FRMT;
+	private String timestamp;
 	
 /**
  * @param user
  * @param password
  */
-public ServiceRecordProcess(String user, String password){
-	init(user,password);
+public SPRecordProcess(String user, String password){
+	init(user, password);
 }
 
 /**
@@ -54,60 +56,31 @@ private void init(String user, String password){
 	}
 }
 
-/**
- * @param serv
- * @return
- */
-private String addService(Service serv){
-	Statement stmt = null;
-    String query = "INSERT INTO tbl_Services" +
-	"Values (serv.getServCode(), serv.getServName(), serv.getServFee())";
-    try {
-        stmt = connection.createStatement();
-        stmt.executeQuery(query);
-        termConnection();
-        return "Service has been added";
-    } catch (SQLException e) {
-		System.out.println(e.getErrorCode()+ " " + e.getMessage());
-		return "Service has not been added";
-	}
+
+private void createTimeStmp(){
+	
 }
 
 /**
- * @param serv
+ * @param provider
+ * @param prov_ID
+ * @param mem_ID
+ * @param serv_code
+ * @param memberName
  * @return
  */
-private String updService(Service serv){
+private String writeRecord(String provider, int prov_ID, int mem_ID, int serv_code, String memberName){
 	Statement stmt = null;
-    String query = "UPDATE tbl_Services" +
-	"SET ('serv_name = serv.getName()', serv_fee = 'serv.getServFee()') +"
-	+ "WHERE serv_code = 'serv.getCode()'";
+    String query = "INSERT INTO tbl_Encounters" +
+	"Values (provider, prov_ID, mem_ID, serv_code, memberName)";
     try {
         stmt = connection.createStatement();
         stmt.executeQuery(query);
         termConnection();
-        return "Service has been updated";
+        return "Service has been written";
     } catch (SQLException e) {
 		System.out.println(e.getErrorCode()+ " " + e.getMessage());
-		return "Service has not been updated";
-	}
-}
-
-/**
- * @param servCode
- * @return
- */
-private String delService(int servCode){
-	Statement stmt = null;
-    String query = "Delete from tbl_Services Where serv_code = 'servCode'";
-    try {
-        stmt = connection.createStatement();
-        stmt.executeQuery(query);
-        termConnection();
-        return "Service has been deleted";
-    } catch (SQLException e) {
-		System.out.println(e.getErrorCode()+ " " + e.getMessage());
-		return "Service has not been deleted";
+		return "Service has not been written";
 	}
 }
 
@@ -121,3 +94,7 @@ public void termConnection() {
 }
 
 }
+
+
+
+
