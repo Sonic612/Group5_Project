@@ -36,7 +36,6 @@ public Member(int memID, String memFName, String memLName, String memStAddr,Stri
 	this.memZip = memZip;
 	this.isActive = isActive;
 	this.isSusp = isSusp;
-	this.optStatusDesc = optStatusDesc;
 }
 
 public int getMemID() {
