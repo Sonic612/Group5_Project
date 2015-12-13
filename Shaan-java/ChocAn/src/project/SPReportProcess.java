@@ -8,13 +8,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import com.microsoft.sqlserver.jdbc.*;
+import java.util.ArrayList;
 /**
  * @author sgill
  *
@@ -22,19 +16,51 @@ import com.microsoft.sqlserver.jdbc.*;
 public class SPReportProcess implements ReportProcess{
 	final String TARGET_SERVER = "jdbc:sqlserver://sonic612.database.windows.net:1433;";
 	final String TARGET_DB = "ChocAn";
+	//Declaring JDBC object
+	private String connString;
+	private String dbUser;
+	private String dbPass;
 	
-	String connString;
-	String dbUser;
-	String dbPass;
-	
-	Connection connection;
-    final String WRITE_STMT = "INSERT INTO tbl_ProvReport(record_date,Content) VALUES(";
-    ResultSet resultProvSet;
-    ResultSet resultEnctrSet;
-    ResultSet resultFCount, resultFSum;
+	private Connection connection;
+	private ResultSet resultProvSet;
+	private ResultSet resultEnctrSet;
+	private ResultSet resultFCount;
+	private ResultSet resultFSum;
     
     String repString = "";
-        
+    //SQL queries
+    final String WRITE_STMT = "INSERT INTO dbo.tbl_ProvReport(Prov_ID,record_date,Content) VALUES(?,?,?);";
+
+  	final String QRY_PROVIDER = "SELECT Prov_Name, Prov_ID, Prov_Address,"
+  					+ "Prov_City, Prov_State,Zip"
+  					+ "\nFROM dbo.tbl_Provider "
+  					+ "\nWHERE Prov_ID = ?;";
+  		
+  	final String QRY_ENCOUNTER = "SELECT Enctr_date,record_date,"
+  				+ " dbo.tbl_Member.Mem_Name,  dbo.tbl_Encounters.Mem_ID, dbo.tbl_Encounters.serv_code, dbo.tbl_Services.SERV_fee"
+  				+ "\nFROM dbo.tbl_Encounters "
+  				+ "\nJOIN dbo.tbl_Member ON dbo.tbl_Encounters.Mem_ID = dbo.tbl_Member.Mem_ID"
+  				+ "\nJOIN dbo.tbl_Services ON dbo.tbl_Encounters.serv_code = dbo.tbl_Services.serv_code"
+  				+ "\nWHERE Prov_ID = ? AND record_date BETWEEN ? AND ?;";
+  		
+  	final String QRY_COUNTER = "SELECT COUNT(UID) AS NumOfEncounters"
+  				+ "\nFROM dbo.tbl_Encounters"
+  				+ "\nWHERE Prov_ID = ? AND record_date BETWEEN ? AND ?;";
+  		
+  	final String QRY_SUM = "SELECT SUM(dbo.tbl_Services.SERV_fee) AS TotalDues"
+  				+ "\nFROM dbo.tbl_Encounters "
+  				+ "\nJOIN dbo.tbl_Services ON dbo.tbl_Encounters.serv_code = dbo.tbl_Services.serv_code"
+  				+ "\nWHERE Prov_ID = ? AND record_date BETWEEN ? AND ?;";
+  	
+  	// Prepared Statements
+    private PreparedStatement Stmt1;
+	private PreparedStatement Stmt2;
+	private PreparedStatement Stmt3;
+	private PreparedStatement Stmt4;
+	private PreparedStatement Stmt5;
+
+    
+	// Constructor
     public SPReportProcess(String user, String password){
     	init(user,password);
     }
@@ -54,6 +80,12 @@ public class SPReportProcess implements ReportProcess{
 
     	try {
             connection = DriverManager.getConnection(connString);
+            Stmt1 = connection.prepareStatement(QRY_PROVIDER);
+            Stmt2 = connection.prepareStatement(QRY_ENCOUNTER);
+            Stmt3= connection.prepareStatement(QRY_COUNTER);
+            Stmt4 = connection.prepareStatement(QRY_SUM);
+            Stmt5 = connection.prepareStatement(WRITE_STMT);
+
     	}
     	catch(SQLException e){
     		System.out.println(e.getErrorCode()+ " " + e.getMessage());
@@ -61,164 +93,172 @@ public class SPReportProcess implements ReportProcess{
     }
     
 	@Override
-	public void computeReport(int id, String date) {
-		//Checking date format
-		Date strDate = new Date();
-		if(date == null){
-			throw new RuntimeException("The date entered for report generation is invalid or null.");
-		}		
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		sdf.setLenient(false);	
+	public void computeReport(int id, String strDate, String endDate){	
 		try {
-			 strDate = sdf.parse(date);		
-		} 
-		catch (ParseException e) {	
-			e.printStackTrace();
-		}
-
-		//SQL queries
-		String provHeader = "SELECET Prov_Name, Prov ID, Prov_Address, "
-					+ "Prov_City, Prov_State, Zip "
-					+ "\nFROM tbl_Provider "
-					+ "\nWHERE Prov_ID = ;";
-		
-		String EnctrHeader = "SELECET tbl_Encounters.Enctr_date, tbl_Encounters.record_date,"
-				+ " tbl_Member.Mem_Name, tbl_Encounters.Mem_ID, tbl_Encounters.serv_code, tbl_Services.SERV_fee"
-				+ "\nFROM tbl_Encounters "
-				+ "\nJOIN tbl_Member \n  ON tbl_Encounters.Mem_ID = tbl_Member.Mem_ID"
-				+ "\nJOIN tbl_Services \n ON tbl_Encounters.serv_code = tbl_Services.serv_code"
-				+ "\nWHERE Prov_ID = ? AND record_date BETWEEN ? AND ?;";
-		
-		String countQuery = "SELECET COUNT(UID)"
-				+ "\nFROM tbl_Encounters"
-				+ "\nWHERE Prov_ID= ? AND record_date BETWEEN ? AND ?;";
-		
-		String sumQuery = "SELECET SUM(SERV_fee)"
-				+ "\nFROM tbl_Encounters"
-				+ "\nWHERE Prov_ID = ? AND record_date BETWEEN ? AND ?;";
-		
-		try {
-			Statement Stmt1 = connection.createStatement();
-			this.resultProvSet = Stmt1.executeQuery(provHeader + id);
 			
-			PreparedStatement Stmt2 = connection.prepareStatement(EnctrHeader);
+			Stmt1.setInt(1, id);;
+			resultProvSet = Stmt1.executeQuery();
+			connection.commit();
+			
 			Stmt2.setInt(1, id);
-			Stmt2.setDate(1, (java.sql.Date) strDate);
-			Stmt2.setDate(1, (java.sql.Date) new Date());
-			this.resultEnctrSet = Stmt2.executeQuery();
+			Stmt2.setDate(2, java.sql.Date.valueOf(strDate));
+			Stmt2.setDate(3, java.sql.Date.valueOf(endDate));
+			resultEnctrSet = Stmt2.executeQuery();
+			connection.commit();
 			
-			PreparedStatement Stmt3 = connection.prepareStatement(countQuery);
 			Stmt3.setInt(1, id);
-			Stmt3.setDate(1, (java.sql.Date) strDate);
-			Stmt3.setDate(1, (java.sql.Date) new Date());
-			this.resultFCount = Stmt3.executeQuery();
+			Stmt3.setDate(2, java.sql.Date.valueOf(strDate));
+			Stmt3.setDate(3, java.sql.Date.valueOf(endDate));
+			resultFCount = Stmt3.executeQuery();
+			connection.commit();
 			
-			PreparedStatement Stmt4 = connection.prepareStatement(sumQuery);
 			Stmt4.setInt(1, id);
-			Stmt4.setDate(1, (java.sql.Date) strDate);
-			Stmt4.setDate(1, (java.sql.Date) new Date());
-			this.resultFSum = Stmt4.executeQuery();
+			Stmt4.setDate(2, java.sql.Date.valueOf(strDate));
+			Stmt4.setDate(3, java.sql.Date.valueOf(endDate));
+			Stmt4.execute();
+			resultFSum = Stmt4.executeQuery();
+			connection.commit();
 			
 		} catch (SQLException e) {
 			System.out.println(e.getErrorCode()+ " " + e.getMessage());
-		}	
+		} 	
 	}
 	
 	@Override
 	public String printReport(){
-		
 		String providerStr = ""; 
-		String enctrStr = ""; 
+		ArrayList<String> enctrList = new ArrayList<String>(); 
 		String finalStr = "";
-		
-		
+		String sqlProvStr = "";
+		ArrayList<String> sqlEnctrList = new ArrayList<String>();
+		String sqlFinStr = "";
 		//Result Sets parsed into a single report string
 		try {
-			while(resultProvSet!=null){
-				String name = resultProvSet.getString("Prov_Name");
-				int number = resultProvSet.getInt("Prov_ID");
-				String address = resultProvSet.getString("Prov_Address");
-				String city = resultProvSet.getString("Prov_City");
-				String state = resultProvSet.getString("Prov_State");
-				String zip = resultProvSet.getString("Zip");
-				
-				providerStr = "Provider Name : " + name + "/nProvider Number : " + number + "/nProvider Street Address : "
-						+ address + "/nProvider City : " + city + "/nProvider State  :" + state + "Provider ZIP : " + zip;	
-			}
-		} catch (SQLException e) {
-			System.out.println(e.getErrorCode()+ " " + e.getMessage());
-		}
-		
-		try {
-			while(resultEnctrSet!=null){
-				DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			while(resultProvSet.next()){
 
-				String enctrDateStr = resultEnctrSet.getDate("Enctr_Date").toString();
-				String recDateStr = sdf.format(resultEnctrSet.getTimestamp("record_date")).toString();
+	
+			String name = resultProvSet.getString("Prov_Name");
+			int number = resultProvSet.getInt("Prov_ID");
+			String address = resultProvSet.getString("Prov_Address");
+			String city = resultProvSet.getString("Prov_City");
+			String state = resultProvSet.getString("Prov_State");
+			int zip = resultProvSet.getInt("Zip");
+				
+			providerStr = "Provider Name: " + name + "\nProvider Number: " + number + "\nProvider Street Address: "
+						+ address + "\nProvider City: " + city + "\nProvider State: " + state + "\nProvider ZIP: " + zip;	
+			
+			sqlProvStr = "Provider Name:" + name + "," + "Provider Number: " + Integer.toString(number) + "," 
+					+ "Provider Street Address: " + address + "," + "Provider City: " + city + "," + 
+					"Provider State: " + state + "," + "Zip: " + zip + ",";
+			
+			
+			}	
+		} catch (SQLException e) {
+			System.out.println(e.getErrorCode()+ " - " + e.getMessage());
+		}
+		try {
+			while(resultEnctrSet.next()){
+
+				java.sql.Date enctrDate = resultEnctrSet.getDate("Enctr_date");
+				java.sql.Timestamp recDate = resultEnctrSet.getTimestamp("record_date");
 				String memNameStr = resultEnctrSet.getString("Mem_Name");
 				int memNumStr = resultEnctrSet.getInt("Mem_ID");
 				int servCodeStr = resultEnctrSet.getInt("serv_code");
 				float fee = resultEnctrSet.getFloat("SERV_fee");
 				
-				enctrStr = "\n-------Service Details--------\nDate of Service : " + enctrDateStr + "/nRecord Date and Time : " +
-						recDateStr + "/nMember Name : " + memNameStr + "/nMember Number: " + memNumStr + "/nService Code  :" + servCodeStr 
-						+ "Provider ZIP : " + fee;				
+				String tempStr1 = "\n-------Service Details--------\nDate of Service: " + enctrDate.toString() + "\nRecord Date and Time: " +
+						recDate.toString() + "\nMember Name: " + memNameStr + "\nMember Number: " + memNumStr + "\nService Code: " + servCodeStr 
+						+ "\nFee: " + fee;				
+				enctrList.add(tempStr1);
+				
+				String tempStr2 = ",-----Service-------,Date of Service: " + enctrDate.toString() + "," + "Record Date and Time: " + 
+						recDate.toString() + "," + "Member Name: " + memNameStr + "," + "Member Number: " 
+						+ memNumStr + "," + "Service Code: " + servCodeStr + "," + "Fee: " + fee + ",";
+				sqlEnctrList.add(tempStr2);
 			}
 		} catch (SQLException e) {
-			System.out.println(e.getErrorCode()+ " " + e.getMessage());
+			System.out.println(e.getErrorCode()+ " - " + e.getMessage());
 		}
-		
-		int enctrCount = -1;
-		int enctrSum = -1;
-		try {
-			while(resultFCount!=null){
-				enctrCount = resultFCount.getInt("COUNT(UID)");
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		int enctrCount = -1, enctrSum  = -1;
 		
 		try {
-			while(resultFSum!=null){
-				enctrSum = resultFSum.getInt("SUM(SERV_fee)");
-			}
+			resultFCount.next();
+			enctrCount = resultFCount.getInt("NumOfEncounters");
+
+		} catch (SQLException e2) {
+			System.out.println(e2.getErrorCode()+ " - " + e2.getMessage());
+		}
+			
+		try {
+			resultFSum.next();
+			 enctrSum = resultFSum.getInt("TotalDues");
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println(e.getErrorCode()+ " - " + e.getMessage());
 		}
 		
-		finalStr = "\nTotal number of consultations with members : " + Integer.toString(enctrCount) + "/nTotal fee for week : " +
+		finalStr = "\nTotal number of consultations with members : " + Integer.toString(enctrCount) + "\nTotal fee for week : " +
 				Integer.toString(enctrSum);
 		
-		return repString = providerStr + enctrStr + finalStr;
+		sqlFinStr = ",Total number of consultations with members: " + Integer.toString(enctrCount) + "," + "Total fee for week: " + 
+				Integer.toString(enctrSum) + ",";
+		
+		String enctrStr = "";
+		for(int i=0;i<enctrList.size();i++){
+			enctrStr += enctrList.get(i) + "\n";
+		}
+		
+		String sqlEnctrStr = "";
+		for(int i=0;i<sqlEnctrList.size();i++){
+			sqlEnctrStr += sqlEnctrList.get(i);
+		}
+		
+		repString = sqlProvStr + sqlEnctrStr + sqlFinStr;
+		
+		return providerStr + enctrStr + finalStr;
 	}
 
 	@Override
-	public void computeReport(String startDate) {
+	public void computeReport(String startDate, String endDate) {
 		throw new UnsupportedOperationException("Alternate form of same method valid, provider ID is required");
 	}
 
 	@Override
 	public void termConnection() {
 		try {
+			Stmt1.close();
+			Stmt2.close();
+			Stmt3.close();
+			Stmt4.close();
+			Stmt5.close();
+			resultProvSet.close();
+		    resultEnctrSet.close();
+		    resultFCount.close();
+		    resultFSum.close();
 			connection.close();
+			
 		} catch (SQLException e) {
 			System.out.println(e.getErrorCode()+ " " + e.getMessage());
 		}
 	}
 
 	@Override
-	public void saveReport() {
-		
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date date = new Date();
-		Statement insertStmt;
-		try {
-			insertStmt = connection.createStatement();
-			insertStmt.execute(WRITE_STMT + dateFormat.format(date) + "," + repString + ");");
-		} catch (SQLException e) {
-			System.out.println(e.getErrorCode()+ " " + e.getMessage());
-		}		
+	public void saveReport(int ID){	
+			try {
+				Stmt5.setInt(1, ID);
+				Stmt5.setDate(2, new java.sql.Date(System.currentTimeMillis()));
+				Stmt5.setString(3, repString);
+				Stmt5.executeQuery();
+			} catch (SQLException e) {
+				if(e.getMessage().equals("The statement did not return a result set.")){
+					return;
+				}
+				System.out.println(e.getErrorCode()+ " " + e.getMessage());
+			}
 	}
 
+	@Override
+	public void saveReport() {
+		throw new UnsupportedOperationException("Alternate form of same method valid, provider ID is required");
+	}
 }
 

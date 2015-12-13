@@ -4,12 +4,16 @@
 		<item value="525" key="dialogHeight"/>
 		<item value="1025" key="dialogWidth"/>
 		<list key="textEntries">
+			<item value="1"/>
 		</list>
 		<list key="orderedElements">
+			<item value="org.eclipse.wst.server.ui.new.server"/>
 		</list>
 		<list key="orderedProviders">
+			<item value="org.eclipse.ui.wizards"/>
 		</list>
 		<list key="textArray">
+			<item value="fin"/>
 		</list>
 	</section>
 </section>

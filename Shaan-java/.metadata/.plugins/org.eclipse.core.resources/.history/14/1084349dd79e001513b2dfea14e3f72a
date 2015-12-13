@@ -1,0 +1,124 @@
+package project;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+/**
+ * This is the Data Center Operator Class. This controls the DC Operator functions.
+ * 
+ * @author sfyock
+ */
+public class DCOperator {
+	final String TARGET_SERVER = "jdbc:sqlserver://sonic612.database.windows.net:1433;";
+	final String TARGET_DB = "ChocAn";
+	//Declaring JDBC object
+	String connString;
+	String dbUser;
+	String dbPass;
+	Connection connection;
+	
+	
+	final String ADD_MEM_STMT = "INSERT INTO dbo.tbl_Member(Mem_ID,Mem_Name,Mem_Address,Mem_City,Mem_State,Zip) VALUES(?,?,?,?,?,?);";
+	final String DEL_MEM_STMT = "DELETE FROM dbo.tbl_Member WHERE Mem_ID = ?;";
+	final String UPDATE_MEM_STMT = "UPDATE dbo.tbl_Member "
+			+ "\nSET Mem_ID = ?,Mem_Name = ?,Mem_Address = ?,Mem_City = ?,Mem_State = ?,Zip = ?"
+			+ "\nWHERE Mem_ID = ?;";
+	
+	final String ADD_PROV_STMT = "INSERT INTO dbo.tbl_Provider(Prov_ID,Prov_Name,Prov_Address,Prov_City,Prov_State,Zip) VALUES(?,?,?,?,?,?);";
+	final String DEL_PROV_STMT = "DELETE FROM dbo.tbl_Provider WHERE Prov_ID = ?;";
+	final String UPDATE_PROV_STMT = "UPDATE dbo.tbl_Provider "
+			+ "\nSET Prov_ID = ?,Prov_Name = ?,Prov_Address = ?,Prov_City = ?,Prov_State = ?,Zip = ?"
+			+ "\nWHERE Prov_ID = ?;";
+	
+	// Prepared Statements
+    private PreparedStatement Stmt1;
+	private PreparedStatement Stmt2;
+	private PreparedStatement Stmt3;
+	private PreparedStatement Stmt4;
+	private PreparedStatement Stmt5;
+	private PreparedStatement Stmt6;
+
+	 
+	DCOperator(String user, String password){
+		init(user, password);
+	}
+	
+	private void init(String user, String password) {
+		this.dbUser = user;
+    	this.dbPass = password;
+    	this.connString = TARGET_SERVER + ";" 
+                + "database="+ TARGET_DB + ";"
+                + "user=" + dbUser + ";"
+                + "password={" + dbPass + "};"
+                + "encrypt=true;"
+                + "trustServerCertificate=false;"
+                + "hostNameInCertificate=*.database.windows.net;"
+                + "loginTimeout=60;";
+  
+
+    	try {
+            connection = DriverManager.getConnection(connString);
+            Stmt1 = connection.prepareStatement(ADD_MEM_STMT);
+            Stmt2 = connection.prepareStatement(DEL_MEM_STMT);
+            Stmt3 = connection.prepareStatement(UPDATE_MEM_STMT);
+            Stmt4 = connection.prepareStatement(ADD_PROV_STMT);
+            Stmt5 = connection.prepareStatement(DEL_PROV_STMT);
+            Stmt6 = connection.prepareStatement(UPDATE_PROV_STMT);
+    	}
+    	catch(SQLException e){
+    		System.out.println(e.getErrorCode()+ " " + e.getMessage());
+    	}
+		
+	}
+	
+	private void addMember(Member mem){
+		try {
+			Stmt1.setInt(1, mem.getMemID());
+			Stmt1.setString(2, mem.getMemFName() + mem.getMemLName());
+			Stmt1.setString(3, mem.getMemStAddr());
+			Stmt1.setString(4, mem.getMemCity());
+			Stmt1.setString(5, mem.getMemSt());
+			Stmt1.setInt(6, mem.getMemZip());
+			Stmt5.executeQuery();
+		} catch (SQLException e) {
+			if(e.getMessage().equals("The statement did not return a result set.")){
+				return;
+			}
+			System.out.println(e.getErrorCode()+ " " + e.getMessage());
+		}
+	}
+	
+	private void delMember(memID mem){
+		
+	}
+	
+	private void updateMember(Member mem){
+		
+	}
+	/**
+	 * @param prov
+	 */
+	private void addProvider(Provider prov){
+		
+	}
+	/**
+	 * @param prov
+	 */
+	private void delProvider(provID prov){
+		
+	}
+	/**
+	 * @param prov
+	 */
+	private void updateProvider(Provider prov){
+		
+	}
+	/**
+	 * 
+	 */
+	private void termConn(){
+		
+	}
+}

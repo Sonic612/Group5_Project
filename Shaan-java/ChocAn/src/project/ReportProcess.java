@@ -1,5 +1,8 @@
 package project;
 
+import java.sql.SQLException;
+
+
 	public interface ReportProcess{
 		//Constant Variables
 		/**
@@ -14,14 +17,15 @@ package project;
 		 * @param id, int variable
 		 * @param startDate, Date variable that signifies the start date of the week for which the report is to be computed.
 		 * @return String, report information in the required format contained in a single string variable.
+		 * @throws SQLException 
 		 */
-		void computeReport(int id,String startDate);
+		void computeReport(int id,String startDate, String endDate);
 		
 		/**
 		 * @param startDateDate variable that signifies the start date of the week for which the report is to be computed.
 		 * @return String, report information in the required format contained in a single string variable.
 		 */
-		void computeReport(String startDate);
+		void computeReport(String startDate,String endDate);
 		
 		/**
 		 * Terminates the connection to the database.
@@ -34,6 +38,8 @@ package project;
 		 * Write the report string from printReport() into the listed TARGET_DBTBL.
 		 */
 
+		void saveReport(int ID);
+		
 		void saveReport();
 		
 }

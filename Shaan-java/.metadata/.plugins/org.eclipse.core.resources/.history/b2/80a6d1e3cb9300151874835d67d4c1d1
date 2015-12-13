@@ -1,0 +1,32 @@
+package project;
+
+import java.sql.SQLException;
+
+
+public class Test {
+
+	public static void main(String[] args) throws SQLException {
+		SPReportProcess ver1 = new SPReportProcess("group5","!Tech!612");
+		/*
+		 * //Checking date format
+		Date strDate = new Date();
+		if(date == null){
+			throw new RuntimeException("The date entered for report generation is invalid or null.");
+		}		
+		SimpleDateFormat sdf = new SimpleDateFormat("");
+		sdf.setLenient(false);	
+		try {
+			 strDate = sdf.parse(date);		
+		} 
+		catch (ParseException e) {	
+			e.printStackTrace();
+		}
+		 */
+		ver1.computeReport(10,"2015-11-11","2015-11-25");
+		System.out.print(ver1.printReport());
+		ver1.saveReport(int id);
+		ver1.termConnection();
+
+	}
+
+}
