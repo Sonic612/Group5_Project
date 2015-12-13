@@ -14,7 +14,7 @@ import java.util.Date;
  * @author jmilinsk
  *
  */
-public class ServiceRecordProcess implements RecordProcess{
+public class ServiceRecordProcess {
 	
 	final String TARGET_SERVER = "jdbc:sqlserver://sonic613.database.windows.net:1433;";
 	final String TARGET_DB = "ChocAn";
