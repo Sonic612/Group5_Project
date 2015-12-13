@@ -30,9 +30,9 @@ public class MemReportProcess implements ReportProcess{
 	private String reportString;
 	
 	final String WRITE_STMT = "INSERT INTO tbl_MemReport(record_date,Content) VALUES(";
-	ResultSet resultMemSet;
-    ResultSet resultEnctrSet;
-	String repString = "";
+	private ResultSet resultMemSet;
+    	private ResultSet resultEnctrSet;
+	private String repString = "";
 	
 	public MemReportProcess(String user, String password){
 		init(user, password);
