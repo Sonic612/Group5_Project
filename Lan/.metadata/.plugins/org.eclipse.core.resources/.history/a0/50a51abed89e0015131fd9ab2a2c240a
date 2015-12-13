@@ -5,13 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import com.microsoft.sqlserver.jdbc.*;
+import java.util.ArrayList;
 
 /**
  * @author lle
@@ -19,16 +13,25 @@ import com.microsoft.sqlserver.jdbc.*;
  */
 
 public class MngReportProcess implements ReportProcess{
-	final String TARGET_SERVER = "jdbc:sqlserver://sonic612.database.windows.net:1433;";
+	final String TARGET_SERVER = "jdbc:sqlserver://sonic613.database.windows.net:1433;";
 	final String TARGET_DB = "ChocAn";
 	
-	private Connection connection;
 	private String connString;
 	private String dbUser;
 	private String dbPass;
-	public Connection dbTarget;
-	private String reportString;
 	
+	private Connection connection;
+	private ResultSet resultProvSet;
+	private ResultSet resultEnctrSet;
+	private ResultSet resultFSum;
+	private ResultSet resultProvSum;
+	private ResultSet resultEnctrSum;
+	private ResultSet resultFeeSum;
+	
+	String repString = "";
+	
+	final String WRITE_STMT = "INSERT INTO tbl_MngReport(Mng_ID,record_date,Content) VALUES(?,?,?);";
+
 	public MngReportProcess(String user, String password){
 		init(user, password);
 	}
@@ -71,7 +74,8 @@ public class MngReportProcess implements ReportProcess{
 		}
 		
 		//SQL queries
-		//provider to be paid that week, the number of consultations each had, and his or her total fee for that week, the total number of providers who provided services, the total number of consultations, and the overall fee total
+		//provider to be paid that week, the number of consultations each had, and his or her total fee for that week, 
+		//the total number of providers who provided services, the total number of consultations, and the overall fee total
 		
 	}
 
@@ -107,6 +111,24 @@ public class MngReportProcess implements ReportProcess{
 		} catch (SQLException e) {
 			System.out.println(e.getErrorCode()+ " " + e.getMessage());
 		}	
+		
+	}
+
+	@Override
+	public void computeReport(int id, String startDate, String endDate) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void computeReport(String startDate, String endDate) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void saveReport(int ID) {
+		// TODO Auto-generated method stub
 		
 	}
 

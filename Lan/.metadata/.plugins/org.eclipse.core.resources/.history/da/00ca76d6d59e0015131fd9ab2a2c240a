@@ -1,0 +1,190 @@
+package Project;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+/**
+ * @author lle
+ *
+ */
+
+public class MemReportProcess implements ReportProcess{
+	final String TARGET_SERVER = "jdbc:sqlserver://sonic613.database.windows.net:1433;";
+	final String TARGET_DB = "ChocAn";
+	
+	private String connString;
+	private String dbUser;
+	private String dbPass;
+	
+	private Connection connection;
+	ResultSet resultMemSet;
+    ResultSet resultEnctrSet;
+	
+	String repString = "";
+	final String WRITE_STMT = "INSERT INTO dbo.tbl_MemReport(Mem_ID,record_date,Content) VALUES(?,?,?):";
+	
+	final String QRY_MEMBER = "SELECET Mem_Name, Mem_ID, Mem_Address, "
+			+ "Mem_City, Mem_State, Zip "
+			+ "\nFROM tbl_Member "
+			+ "\nWHERE Mem_ID = ;";
+
+	final String QRY_ENCOUNTER = "SELECET tbl_Encounters.Enctr_date, "
+			+ " tbl_Provider.Prov_Name, tbl_Services.serv_name"
+			+ "\nFROM tbl_Encounters "
+			+ "\nJOIN tbl_Provider \n  ON tbl_Encounters.Prov_ID = tbl_Provider.Prov_ID"
+			+ "\nJOIN tbl_Services \n ON tbl_Encounters.serv_code = tbl_Services.serv_code"
+			+ "\nWHERE Mem_ID = ? AND record_date BETWEEN ? AND ?;";
+	
+	//Prepared Statements
+	private PreparedStatement Stmt1;
+	private PreparedStatement Stmt2;
+	private PreparedStatement Stmt3;
+	
+	public MemReportProcess(String user, String password){
+		init(user, password);
+	}
+	
+	private void init(String user, String password){
+    	this.dbUser = user;
+    	this.dbPass = password;
+    	this.connString = TARGET_SERVER + ";" 
+                + "database="+ TARGET_DB + ";"
+                + "user=" + dbUser + ";"
+                + "password={" + dbPass + "};"
+                + "encrypt=true;"
+                + "trustServerCertificate=false;"
+                + "hostNameInCertificate=*.database.windows.net;"
+                + "loginTimeout=60;";
+  
+
+    	try {
+            connection = DriverManager.getConnection(connString);
+            connection = DriverManager.getConnection(connString);
+            Stmt1 = connection.prepareStatement(QRY_MEMBER);
+            Stmt2 = connection.prepareStatement(QRY_ENCOUNTER);
+            Stmt3 = connection.prepareStatement(WRITE_STMT);
+    	}
+    	catch(SQLException e){
+    		System.out.println(e.getErrorCode()+ " " + e.getMessage());
+    	}
+    }
+
+	@Override
+	public void computeReport(int id, String strDate, String endDate) {
+		//SQL queries
+		//Member name, Member number, Member street address, Member city, Member state, Member ZIP code
+		//Date of service, Provider name, Service name
+		try {
+			Stmt1.setInt(1, id);
+			resultMemSet = Stmt1.executeQuery();
+			connection.commit();
+			
+			Stmt2.setInt(1, id);
+			Stmt2.setDate(2, java.sql.Date.valueOf(strDate));
+			Stmt2.setDate(3, java.sql.Date.valueOf(endDate));
+			resultEnctrSet = Stmt2.executeQuery();
+			connection.commit();
+			
+		} catch (SQLException e) {
+			System.out.println(e.getErrorCode()+ " " + e.getMessage());
+		}	
+	}
+
+	@Override
+	public String printReport() {
+		String memStr = ""; 
+		String sqlMemStr = "";
+		ArrayList<String> enctrList = new ArrayList<String>();
+		ArrayList<String> sqlEnctrList = new ArrayList<String>();
+		
+		//Result Sets parsed into a single report string
+		try {
+			while(resultMemSet.next()){
+				String name = resultMemSet.getString("Mem_Name");
+				int number = resultMemSet.getInt("Mem_ID");
+				String address = resultMemSet.getString("Mem_Address");
+				String city = resultMemSet.getString("Mem_City");
+				String state = resultMemSet.getString("Mem_State");
+				int zip = resultMemSet.getInt("Zip");
+				
+				memStr = "Member Name : " + name + "/nMember Number : " + number + "/nMember Street Address : "
+						+ address + "/nMember City : " + city + "/nMember State  :" + state + "Member ZIP : " + zip;
+				
+				sqlMemStr = "Member Name : " + name + "," + "Member Number : " + number + "," + "Member Street Address : "
+						+ address + "," + "Member City : " + city + "," + "Member State  :" + state + "," + "Member ZIP : " + zip + ",";
+			}
+		} catch (SQLException e) {
+			System.out.println(e.getErrorCode()+ " " + e.getMessage());
+		}
+		
+		try {
+			while(resultEnctrSet.next()){
+				java.sql.Date enctrDate = resultEnctrSet.getDate("Enctr_Date");
+				String provNameStr = resultEnctrSet.getString("Prov_Name");
+				String servNameStr = resultEnctrSet.getString("serv_name");
+				
+				String tempStr = "\n-------Service Details--------\nDate of Service : " + enctrDate.toString() + "/nProvider Name: " + provNameStr
+						+ "/nService Name: " + servNameStr;
+				enctrList.add(tempStr);
+				
+				String tempStr2 = ",-------Service Details--------,Date of Service : " + enctrDate.toString() + "," + "Provider Name: " + provNameStr
+						+ "," + "Service Name: " + servNameStr + ",";
+				sqlEnctrList.add(tempStr2);
+			}
+		} catch (SQLException e) {
+				System.out.println(e.getErrorCode()+ " " + e.getMessage());
+				
+		}
+		
+		String enctrStr = "";
+		for(int i = 0; i < enctrList.size(); i++){
+			enctrStr += enctrList.get(i); 
+		}
+
+		for(int i = 0; i < sqlEnctrList.size(); i++){
+			repString += sqlEnctrList.get(i); 
+		}
+		
+		return memStr + enctrStr;
+	}
+
+	@Override
+	public void termConnection() {
+		try {
+			Stmt1.close();
+			Stmt2.close();
+			resultMemSet.close();
+			resultEnctrSet.close();
+			connection.close();
+		} catch (SQLException e) {
+			System.out.println(e.getErrorCode()+ " " + e.getMessage());
+		}
+	}
+
+	@Override
+	public void saveReport(int ID) {
+		try {
+			Stmt.setInt(1, ID);
+			Stmt.setDate(2, new java.sql.Date(System.currentTimeMillis()));
+			Stmt.setString(3, repString);
+			Stmt.executeQuery();
+		} catch (SQLException e) {
+			if(e.getMessage().equals("The statement did not return a result set.")){
+				return;
+			}
+			System.out.println(e.getErrorCode()+ " " + e.getMessage());
+		}	
+		
+	}
+
+	@Override
+	public void computeReport(String startDate, String endDate) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

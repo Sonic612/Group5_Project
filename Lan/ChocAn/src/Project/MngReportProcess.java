@@ -5,13 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import com.microsoft.sqlserver.jdbc.*;
+import java.util.ArrayList;
 
 /**
  * @author lle
@@ -22,18 +16,35 @@ public class MngReportProcess implements ReportProcess{
 	final String TARGET_SERVER = "jdbc:sqlserver://sonic613.database.windows.net:1433;";
 	final String TARGET_DB = "ChocAn";
 	
-	private Connection connection;
 	private String connString;
 	private String dbUser;
 	private String dbPass;
-	public Connection dbTarget;
-	private String reportString;
 	
-	final String WRITE_STMT = "INSERT INTO tbl_MngReport(record_date,Content) VALUES(";
+	private Connection connection;
+	private ResultSet resultProvSet;
+	private ResultSet resultEnctrSet;
+	private ResultSet resultFeeSet;
+	private ResultSet resultProvSum;
+	private ResultSet resultEnctrSum;
+	private ResultSet resultFeeSum;
+	
 	String repString = "";
-	/*ResultSet resultProvSet;
-    ResultSet resultEnctrSet;
-    ResultSet resultFCount, resultFSum;*/
+	
+	final String WRITE_STMT = "INSERT INTO tbl_MngReport(Mng_ID,record_date,Content) VALUES(?,?,?);";
+	
+	final String QRY_PROVIDER = "SELECT Prov_Name, Prov_ID,"
+				+ "\nWHERE Prov_ID = ?;";
+	
+	final String QRY_ENCOUNTER = "SELECT COUNT(DISTINCT Prov_ID) AS NumOfEncounters"
+  				+ "\nFROM dbo.tbl_Encounters"
+  				+ "\nWHERE record_date BETWEEN ? AND ?;";
+	
+	final String QRY_FEE = "SELECT SUM(dbo.tbl_Services.SERV_fee) AS TotalDues"
+				+ "\nFROM dbo.tbl_Encounters "
+				+ "\nJOIN dbo.tbl_Services ON dbo.tbl_Encounters.serv_code = dbo.tbl_Services.serv_code"
+				+ "\nWHERE Prov_ID = ? AND record_date BETWEEN ? AND ?;";
+	
+	
 	public MngReportProcess(String user, String password){
 		init(user, password);
 	}
@@ -58,33 +69,6 @@ public class MngReportProcess implements ReportProcess{
     		System.out.println(e.getErrorCode()+ " " + e.getMessage());
     	}
     }
-	
-	@Override
-	public void computeReport(int id, String date) {
-		//Checking date format
-		Date strDate = new Date();
-		if(date == null){
-			throw new RuntimeException("The date entered for report generation is invalid or null.");
-		}		
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		sdf.setLenient(false);	
-		try {
-			 strDate = sdf.parse(date);		
-		} 
-		catch (ParseException e) {	
-			e.printStackTrace();
-		}
-		
-		//SQL queries
-		//provider to be paid that week, the number of consultations each had, and his or her total fee for that week, the total number of providers who provided services, the total number of consultations, and the overall fee total
-		
-	}
-
-	@Override
-	public void computeReport(String startDate) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public String printReport() {
@@ -102,16 +86,28 @@ public class MngReportProcess implements ReportProcess{
 	}
 
 	@Override
+	public void computeReport(int id, String startDate, String endDate) {
+		//SQL queries
+		//provider to be paid that week, the number of consultations each had, and his or her total fee for that week, 
+		//the total number of providers who provided services, the total number of consultations, and the overall fee total
+		
+	}
+
+	@Override
+	public void computeReport(String startDate, String endDate) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void saveReport(int ID) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
 	public void saveReport() {
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date date = new Date();
-		Statement insertStmt;
-		try {
-			insertStmt = connection.createStatement();
-			insertStmt.execute(WRITE_STMT + dateFormat.format(date) + "," + repString + ");");
-		} catch (SQLException e) {
-			System.out.println(e.getErrorCode()+ " " + e.getMessage());
-		}	
+		// TODO Auto-generated method stub
 		
 	}
 
