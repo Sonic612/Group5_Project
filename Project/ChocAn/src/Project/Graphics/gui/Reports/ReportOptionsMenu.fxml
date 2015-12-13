@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<Pane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Graphics.Reports.ReportMenuController">
+   <children>
+      <Label layoutX="162.0" layoutY="14.0" text="Report Options:">
+         <font>
+            <Font name="System Bold Italic" size="12.0" />
+         </font>
+      </Label>
+      <Button layoutX="20.0" layoutY="57.0" mnemonicParsing="false" onAction="#onSetupRepClick" prefHeight="52.0" prefWidth="118.0" text="Setup Report" textAlignment="CENTER" wrapText="true" />
+      <Button layoutX="147.0" layoutY="57.0" mnemonicParsing="false" onAction="#onMemRepClick" prefHeight="52.0" prefWidth="118.0" text="Print Member Report" textAlignment="CENTER" wrapText="true" />
+      <Button layoutX="275.0" layoutY="57.0" mnemonicParsing="false" onAction="#onProvRepClick" prefHeight="52.0" prefWidth="118.0" text="Print Provider Report" textAlignment="CENTER" wrapText="true" />
+      <Button layoutX="161.0" layoutY="126.0" mnemonicParsing="false" onAction="#onBTMenuClick" text="Back To Menu" />
+   </children>
+   <padding>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+   </padding>
+</Pane>
