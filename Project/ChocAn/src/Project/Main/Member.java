@@ -27,7 +27,7 @@ public class Member {
  * @param isSusp
  * @param optStatusDesc
  */
-public Member(int memID, String memFName, String memLName, String memStAddr,String memCity, String memSt, int memZip, boolean isActive, boolean isSusp, String optStatusDesc){
+public Member(int memID, String memFName, String memLName, String memStAddr,String memCity, String memSt, int memZip, boolean isActive, boolean isSusp){
 	
 	this.memID = memID;
 	this.memFName = memFName;
