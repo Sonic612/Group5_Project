@@ -1,0 +1,257 @@
+package project;
+
+import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+	public class MngReportProcess implements ReportProcess{
+		final String TARGET_SERVER = "jdbc:sqlserver://sonic613.database.windows.net:1433;";
+		final String TARGET_DB = "ChocAn";
+		
+		private String connString;
+		private String dbUser;
+		private String dbPass;
+		
+		private Connection connection;
+		private ResultSet resultProvSet;
+		private ResultSet resultNumProv;
+		private ResultSet resultSumProv;
+		private ResultSet resultNumEnctrs;
+		private ResultSet resultTotalFee;
+
+	 	// Prepared Statements
+	    private PreparedStatement Stmt1;
+		private PreparedStatement Stmt2;
+		private PreparedStatement Stmt3;
+		private PreparedStatement Stmt4;
+		private PreparedStatement Stmt5;
+		private PreparedStatement Stmt6;
+		//
+		
+		private String repStartDate;
+		private String repEndDate;
+		
+		String repString = "";
+		
+		final String WRITE_STMT = "INSERT INTO tbl_EFTReport(record_date,Content) VALUES(?,?);";
+		
+		final String QRY_PROVIDER = "SELECT dbo.tbl_Encounters.Prov_ID, dbo.tbl_Provider.Prov_Name, dbo.tbl_Service.SERV_fee,"
+  				+ "\nJOIN dbo.tbl_Services ON dbo.tbl_Encounters.serv_code = dbo.tbl_Services.serv_code"
+  				+ "\nWHERE record_date BETWEEN ? AND ?;";
+		
+		final String QRY_NUMOFPROV = "SELECT COUNT(DISTINCT Prov_ID) AS NumOfProviders"
+	  				+ "\nFROM dbo.tbl_Encounters"
+	  				+ "\nWHERE record_date BETWEEN ? AND ?;";
+		
+		final String QRY_NUMOF_PROV_ENCTRS = "SELECT COUNT(UID) AS NumOfConsultations"
+  				+ "\nFROM dbo.tbl_Encounters"
+  				+ "\nWHERE Prov_ID=? AND record_date BETWEEN ? AND ?;";
+		
+		final String QRY_PROV_TOTAL_FEE = "SELECT SUM(dbo.tbl_Services.SERV_fee) AS ProviderDues"
+				+ "\nFROM dbo.tbl_Encounters "
+				+ "\nJOIN dbo.tbl_Services ON dbo.tbl_Encounters.serv_code = dbo.tbl_Services.serv_code"
+				+ "\nWHERE Prov_ID=? AND record_date BETWEEN ? AND ?;";
+		
+		final String QRY_TOTALFEE = "SELECT SUM(dbo.tbl_Services.SERV_fee) AS TotalDues"
+				+ "\nFROM dbo.tbl_Encounters "
+				+ "\nJOIN dbo.tbl_Services ON dbo.tbl_Encounters.serv_code = dbo.tbl_Services.serv_code"
+				+ "\nWHERE record_date BETWEEN ? AND ?;";
+		
+		
+		public MngReportProcess(String user, String password){
+			init(user, password);
+		}
+		
+		private void init(String user, String password){
+	    	this.dbUser = user;
+	    	this.dbPass = password;
+	    	this.connString = TARGET_SERVER + ";" 
+	                + "database="+ TARGET_DB + ";"
+	                + "user=" + dbUser + ";"
+	                + "password={" + dbPass + "};"
+	                + "encrypt=true;"
+	                + "trustServerCertificate=false;"
+	                + "hostNameInCertificate=*.database.windows.net;"
+	                + "loginTimeout=60;";
+	  
+
+	    	try {
+	            connection = DriverManager.getConnection(connString);
+	            Stmt1 = connection.prepareStatement(QRY_PROVIDER);
+	            Stmt2 = connection.prepareStatement(QRY_NUMOF_PROV_ENCTRS);
+	            Stmt3= connection.prepareStatement(QRY_PROV_TOTAL_FEE);
+	            Stmt4 = connection.prepareStatement(QRY_NUMOFPROV);
+	            Stmt5 = connection.prepareStatement(QRY_TOTALFEE);
+	            Stmt6 =  connection.prepareStatement(WRITE_STMT);
+
+	    	}
+	    	catch(SQLException e){
+	    		System.out.println(e.getErrorCode()+ " " + e.getMessage());
+	    	}
+	    }
+
+
+		@Override
+		public void computeReport(int id, String startDate, String endDate) {
+			throw new UnsupportedOperationException("Alternate form of same method valid, No ID is required");
+
+		}
+
+		@Override
+		public void computeReport(String startDate, String endDate) {
+			
+			this.repStartDate = startDate;
+			this.repEndDate = endDate;
+			try {
+				Stmt1.setDate(1, java.sql.Date.valueOf(startDate));
+				Stmt1.setDate(2, java.sql.Date.valueOf(endDate));
+				resultProvSet = Stmt1.executeQuery();
+				connection.commit();
+				
+				Stmt4.setDate(2, java.sql.Date.valueOf(startDate));
+				Stmt4.setDate(3, java.sql.Date.valueOf(endDate));
+				resultNumEnctrs = Stmt4.executeQuery();
+				connection.commit();
+				
+				Stmt5.setDate(2, java.sql.Date.valueOf(startDate));
+				Stmt5.setDate(3, java.sql.Date.valueOf(endDate));
+				resultTotalFee = Stmt5.executeQuery();
+				connection.commit();	
+			} catch (SQLException e) {
+				System.out.println(e.getErrorCode()+ " - " + e.getMessage());
+			}
+				
+		}
+		
+		@Override
+		public String printReport() {
+			ArrayList<String> provList = new ArrayList<String>(); 
+			ArrayList<String> sqlProvList = new ArrayList<String>(); 
+			int enctrCount, totalSum = 0;
+			String finalStr = "";
+			String sqlFinStr = "";
+			
+			//Result Sets parsed into a single report string
+			try {
+				while(resultProvSet.next()){
+					int number = resultProvSet.getInt("Prov_ID");
+					String name = resultProvSet.getString("Prov_Address");
+					double fee = resultProvSet.getFloat("SERV_fee");
+				
+					//provider Specific statements
+					Stmt2.setInt(1, number);
+					Stmt2.setDate(2,java.sql.Date.valueOf(repStartDate));
+					Stmt2.setDate(3,java.sql.Date.valueOf(repStartDate));
+					resultNumProv = Stmt2.executeQuery();
+					connection.commit();
+				
+					Stmt3.setInt(1, number);
+					Stmt3.setDate(2,java.sql.Date.valueOf(repStartDate));
+					Stmt3.setDate(3,java.sql.Date.valueOf(repStartDate));
+					resultSumProv = Stmt3.executeQuery();
+					connection.commit();
+				
+					//Getting above values
+					int count = 0, sum = 0;
+				
+					try {
+						resultNumProv.next();
+						count = resultNumProv.getInt("NumOfConsultations");
+					} catch (SQLException e) {
+						System.out.println(e.getErrorCode()+ " - " + e.getMessage());
+					}
+				
+					try {
+						resultSumProv.next();
+						sum = resultSumProv.getInt("ProviderDues");
+					} catch (SQLException e) {
+						System.out.println(e.getErrorCode()+ " - " + e.getMessage());
+					}
+					
+					String providerStr = "Provider ID: " + number + "\nProvider Name: " + name + "\nNumber of Consultations: " 
+									+ count + "\nDues towards Provider: " + sum;	
+					provList.add(providerStr);
+					
+					String sqlProvStr = "Provider ID: " + number + "," + "Provider Name: " + name + "," + "Number of Consulations: "
+									+ count + "," + "Dues towards Provider: " + sum + ",";
+					sqlProvList.add(sqlProvStr);		
+					
+				}	
+			} catch (SQLException e) {
+				System.out.println(e.getErrorCode()+ "-" + e.getMessage());
+			}
+			
+			try {
+				resultNumEnctrs.next();
+				enctrCount = resultNumEnctrs.getInt("NumOfEncounters");
+
+			} catch (SQLException e2) {
+				System.out.println(e2.getErrorCode()+ " - " + e2.getMessage());
+			}
+				
+			try {
+				resultTotalFee.next();
+				 totalSum = resultTotalFee.getInt("TotalDues");
+			} catch (SQLException e) {
+				System.out.println(e.getErrorCode()+ " - " + e.getMessage());
+			}
+			
+			finalStr = "\nTotal number of providers with more than one consultaitons : " + Integer.toString(enctrCount) + "\nTotal dues for the week : " +
+					Integer.toString(totalSum);
+			
+			sqlFinStr = ",Total number of providers with more than one consultaitons: " + Integer.toString(enctrCount) + "," + "Total dues for the week : " + 
+					Integer.toString(totalSum) + ",";
+			
+			String tempStr1 = "";
+			
+			//putting together string for reporting
+			for(int i=0;i<provList.size();i++){
+				tempStr1 += provList.get(i) + "\n";
+			}
+			
+			String tempStr2 = "";
+			for(int i=0;i<sqlProvList.size();i++){
+				tempStr2 += sqlProvList.get(i);
+			}
+			//
+			repString = tempStr2 + sqlFinStr;
+			
+			return tempStr1 + finalStr;
+		}
+
+		@Override
+		public void termConnection() {
+			try {
+				Stmt1.close();
+				Stmt2.close();
+				Stmt3.close();
+				Stmt4.close();
+				Stmt5.close();
+				Stmt6.close();
+				resultProvSet.close();
+				resultNumProv.close();
+				resultSumProv.close();
+				resultNumEnctrs.close();
+				resultTotalFee.close();
+				connection.close();
+				
+			} catch (SQLException e) {
+				System.out.println(e.getErrorCode()+ " " + e.getMessage());
+			}
+		}
+
+		@Override
+		public void saveReport(int ID) {
+			throw new UnsupportedOperationException("Alternate form of same method valid, No ID is required");			
+		}
+
+		@Override
+		public void saveReport() {
+			
+		}
+
+}

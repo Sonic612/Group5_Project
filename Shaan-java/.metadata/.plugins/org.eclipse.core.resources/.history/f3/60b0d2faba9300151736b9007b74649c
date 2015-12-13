@@ -1,0 +1,258 @@
+/**
+ * 
+ */
+package project;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+/**
+ * @author sgill
+ *
+ */
+public class SPReportProcess implements ReportProcess{
+	final String TARGET_SERVER = "jdbc:sqlserver://sonic612.database.windows.net:1433;";
+	final String TARGET_DB = "ChocAn";
+	//Declaring JDBC object
+	String connString;
+	String dbUser;
+	String dbPass;
+	
+	Connection connection;
+    ResultSet resultProvSet;
+    ResultSet resultEnctrSet;
+    ResultSet resultFCount;
+    ResultSet resultFSum;
+    
+    String repString = "";
+    
+    //SQL queries
+    final String WRITE_STMT = "INSERT INTO dbo.tbl_ProvReport(record_date,Content) VALUES(?,?);";
+
+  	final String QRY_PROVIDER = "SELECT Prov_Name, Prov_ID, Prov_Address,"
+  					+ "Prov_City, Prov_State,Zip"
+  					+ "\nFROM dbo.tbl_Provider "
+  					+ "\nWHERE Prov_ID = ?;";
+  		
+  	final String QRY_ENCOUNTER = "SELECT Enctr_date,record_date,"
+  				+ " dbo.tbl_Member.Mem_Name,  dbo.tbl_Encounters.Mem_ID, dbo.tbl_Encounters.serv_code, dbo.tbl_Services.SERV_fee"
+  				+ "\nFROM dbo.tbl_Encounters "
+  				+ "\nJOIN dbo.tbl_Member ON dbo.tbl_Encounters.Mem_ID = dbo.tbl_Member.Mem_ID"
+  				+ "\nJOIN dbo.tbl_Services ON dbo.tbl_Encounters.serv_code = dbo.tbl_Services.serv_code"
+  				+ "\nWHERE Prov_ID = ? AND record_date BETWEEN ? AND ?;";
+  		
+  	final String QRY_COUNTER = "SELECT COUNT(UID) AS NumOfEncounters"
+  				+ "\nFROM dbo.tbl_Encounters"
+  				+ "\nWHERE Prov_ID = ? AND record_date BETWEEN ? AND ?;";
+  		
+  	final String QRY_SUM = "SELECT SUM(dbo.tbl_Services.SERV_fee) AS TotalDues"
+  				+ "\nFROM dbo.tbl_Encounters "
+  				+ "\nJOIN dbo.tbl_Services ON dbo.tbl_Encounters.serv_code = dbo.tbl_Services.serv_code"
+  				+ "\nWHERE Prov_ID = ? AND record_date BETWEEN ? AND ?;";
+  	
+  	// Prepared Statements
+    private PreparedStatement Stmt1;
+	private PreparedStatement Stmt2;
+	private PreparedStatement Stmt3;
+	private PreparedStatement Stmt4;
+	private PreparedStatement Stmt5;
+
+    
+	// Constructor
+    public SPReportProcess(String user, String password){
+    	init(user,password);
+    }
+    
+    private void init(String user, String password){
+    	this.dbUser = user;
+    	this.dbPass = password;
+    	this.connString = TARGET_SERVER + ";" 
+                + "database="+ TARGET_DB + ";"
+                + "user=" + dbUser + ";"
+                + "password={" + dbPass + "};"
+                + "encrypt=true;"
+                + "trustServerCertificate=false;"
+                + "hostNameInCertificate=*.database.windows.net;"
+                + "loginTimeout=60;";
+  
+
+    	try {
+            connection = DriverManager.getConnection(connString);
+            Stmt1 = connection.prepareStatement(QRY_PROVIDER);
+            Stmt2 = connection.prepareStatement(QRY_ENCOUNTER);
+            Stmt3= connection.prepareStatement(QRY_COUNTER);
+            Stmt4 = connection.prepareStatement(QRY_SUM);
+            Stmt5 = connection.prepareStatement(WRITE_STMT);
+
+    	}
+    	catch(SQLException e){
+    		System.out.println(e.getErrorCode()+ " " + e.getMessage());
+    	}
+    }
+    
+	@Override
+	public void computeReport(int id, String strDate, String endDate){	
+		try {
+			
+			Stmt1.setInt(1, id);;
+			resultProvSet = Stmt1.executeQuery();
+			connection.commit();
+			
+			Stmt2.setInt(1, id);
+			Stmt2.setDate(2, java.sql.Date.valueOf(strDate));
+			Stmt2.setDate(3, java.sql.Date.valueOf(endDate));
+			resultEnctrSet = Stmt2.executeQuery();
+			connection.commit();
+			
+			Stmt3.setInt(1, id);
+			Stmt3.setDate(2, java.sql.Date.valueOf(strDate));
+			Stmt3.setDate(3, java.sql.Date.valueOf(endDate));
+			resultFCount = Stmt3.executeQuery();
+			connection.commit();
+			
+			Stmt4.setInt(1, id);
+			Stmt4.setDate(2, java.sql.Date.valueOf(strDate));
+			Stmt4.setDate(3, java.sql.Date.valueOf(endDate));
+			Stmt4.execute();
+			resultFSum = Stmt4.executeQuery();
+			connection.commit();
+			
+		} catch (SQLException e) {
+			System.out.println(e.getErrorCode()+ " " + e.getMessage());
+		} 	
+	}
+	
+	@Override
+	public String printReport(){
+		String providerStr = ""; 
+		ArrayList<String> enctrList = new ArrayList<String>(); 
+		String finalStr = "";
+		String sqlProvStr = "";
+		ArrayList<String> sqlEnctrList = new ArrayList<String>();
+		String sqlFinStr = "";
+		//Result Sets parsed into a single report string
+		try {
+			while(resultProvSet.next()){
+
+	
+			String name = resultProvSet.getString("Prov_Name");
+			int number = resultProvSet.getInt("Prov_ID");
+			String address = resultProvSet.getString("Prov_Address");
+			String city = resultProvSet.getString("Prov_City");
+			String state = resultProvSet.getString("Prov_State");
+			int zip = resultProvSet.getInt("Zip");
+				
+			providerStr = "Provider Name: " + name + "\nProvider Number: " + number + "\nProvider Street Address: "
+						+ address + "\nProvider City: " + city + "\nProvider State: " + state + "\nProvider ZIP: " + zip;	
+			
+			sqlProvStr = "\'Provider Name:" + name + "\' +CHAR(13)+ " + "\'Provider Number: " + Integer.toString(number) + "\' +CHAR(13)+" 
+					+ "\'Provider Street Address: " + address + "\' +CHAR(13)+" + "\'Provider City: " + city + "\'+CHAR(13)+" + 
+					"\'Provider State: " + state + "\'+CHAR(13)+" + "\'Zip: " + zip + "\'";
+			
+			}	
+		} catch (SQLException e) {
+			System.out.println(e.getErrorCode()+ " - " + e.getMessage());
+		}
+		try {
+			while(resultEnctrSet.next()){
+
+				java.sql.Date enctrDate = resultEnctrSet.getDate("Enctr_date");
+				java.sql.Timestamp recDate = resultEnctrSet.getTimestamp("record_date");
+				String memNameStr = resultEnctrSet.getString("Mem_Name");
+				int memNumStr = resultEnctrSet.getInt("Mem_ID");
+				int servCodeStr = resultEnctrSet.getInt("serv_code");
+				float fee = resultEnctrSet.getFloat("SERV_fee");
+				
+				String tempStr1 = "\n-------Service Details--------\nDate of Service: " + enctrDate.toString() + "\nRecord Date and Time: " +
+						recDate.toString() + "\nMember Name: " + memNameStr + "\nMember Number: " + memNumStr + "\nService Code: " + servCodeStr 
+						+ "\nFee: " + fee;				
+				enctrList.add(tempStr1);
+				
+				String tempStr2 = "\'Date of Service: " + enctrDate.toString() + "\'+CHAR(13)+" + "\'Record Date and Time: " + 
+						recDate.toString() + "\'+CHAR(13)+" + "\'Member Name: " + memNameStr + "\'+CHAR(13)+" + "\'Member Number: " 
+						+ memNumStr + "\'+CHAR(13)+" + "\'Service Code: " + servCodeStr + "\'+CHAR(13)+" + "\'Fee: " + fee + "\'+CHAR(13))";
+				sqlEnctrList.add(tempStr2);
+			}
+		} catch (SQLException e1) {
+			System.out.println(e1.getErrorCode()+ " - " + e1.getMessage());
+		}
+		int enctrCount = -1, enctrSum  = -1;
+		
+		try {
+			resultFCount.next();
+			enctrCount = resultFCount.getInt("NumOfEncounters");
+
+		} catch (SQLException e2) {
+			System.out.println(e2.getErrorCode()+ " - " + e2.getMessage());
+		}
+			
+		try {
+			resultFSum.next();
+			 enctrSum = resultFSum.getInt("TotalDues");
+		} catch (SQLException e3) {
+			System.out.println(e3.getErrorCode()+ " - " + e3.getMessage());
+		}
+		
+		finalStr = "\nTotal number of consultations with members : " + Integer.toString(enctrCount) + "\nTotal fee for week : " +
+				Integer.toString(enctrSum);
+		
+		sqlFinStr = "\'Total number of consultations with members: " + Integer.toString(enctrCount) + "\'+CHAR(13)+" + "\'Total fee for week: " + 
+				Integer.toString(enctrSum) + "\'+CHAR(13)";
+		
+		String enctrStr = "";
+		for(int i=0;i<enctrList.size();i++){
+			enctrStr += enctrList.get(i) + "\n";
+		}
+		
+		String sqlEnctrStr = "";
+		for(int i=0;i<sqlEnctrList.size();i++){
+			sqlEnctrStr += sqlEnctrList.get(i);
+		}
+		
+		repString = sqlProvStr + sqlEnctrStr + sqlFinStr;
+		
+		return providerStr + enctrStr + finalStr;
+	}
+
+	@Override
+	public void computeReport(String startDate, String endDate) {
+		throw new UnsupportedOperationException("Alternate form of same method valid, provider ID is required");
+	}
+
+	@Override
+	public void termConnection() {
+		try {
+			Stmt1.close();
+			Stmt2.close();
+			Stmt3.close();
+			Stmt4.close();
+			Stmt5.close();
+			resultProvSet.close();
+		    resultEnctrSet.close();
+		    resultFCount.close();
+		    resultFSum.close();
+			connection.close();
+			
+		} catch (SQLException e) {
+			System.out.println(e.getErrorCode()+ " " + e.getMessage());
+		}
+	}
+
+	@Override
+	public void saveReport(){	
+			try {
+				Stmt5.setDate(1, new java.sql.Date(System.currentTimeMillis()));
+				Stmt5.setString(2, repString);
+				Stmt5.executeQuery();
+			} catch (SQLException e) {
+				if(e.getMessage().equals("The statement did not return a result set")){
+					return;
+				}
+				System.out.println(e.getErrorCode()+ " " + e.getMessage());
+			}
+	}
+}
+
