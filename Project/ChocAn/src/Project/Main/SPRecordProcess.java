@@ -59,8 +59,11 @@ private void init(String user, String password){
 }
 
 
-private void createTimeStmp(){
-	
+private void createTimeStmp() throws ParseException{
+	DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+	Date date = dateFormat.parse("'date.getDay()'/'date.getMonth()'/'date.getYear()'");
+	long time = date.getTime();
+	new Timestamp(time);
 }
 
 /**
