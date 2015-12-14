@@ -28,7 +28,7 @@ import java.sql.SQLException;
 		void computeReport(String startDate,String endDate);
 		
 		/**
-		 * Terminates the connection and close all prepared statements to the database.
+		 * Terminates the connection to the database.
 		 */
 		
 		String printReport();

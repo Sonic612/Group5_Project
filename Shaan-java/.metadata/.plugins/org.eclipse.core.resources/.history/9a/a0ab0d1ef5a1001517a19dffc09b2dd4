@@ -71,7 +71,7 @@ public class SPRecordProcess implements RecordProcess{
 	 * @param date
 	 * @return
 	 */
-	public String addRecord(int provID, int memID, int servcode, String date){
+	public String AddRecord(int provID, int memID, int servcode, String date){
 		try {
 			Stmt1.setInt(1, provID);
 			Stmt1.setInt(2, memID);
