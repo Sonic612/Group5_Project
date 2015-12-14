@@ -6,7 +6,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * @author lle
@@ -171,7 +170,7 @@ public class MemReportProcess implements ReportProcess{
 	public void saveReport(int ID) {
 		try {
 			Stmt3.setInt(1, ID);
-			Stmt3.setDate(2, new java.sql.Date(new Date().getTime()));
+			Stmt3.setDate(2, new java.sql.Date(System.currentTimeMillis()));
 			Stmt3.setString(3, repString);
 			Stmt3.executeQuery();
 		} catch (SQLException e) {

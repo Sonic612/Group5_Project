@@ -6,7 +6,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 
 	public class MngReportProcess implements ReportProcess{
 		final String TARGET_SERVER = "jdbc:sqlserver://sonic613.database.windows.net:1433;";
@@ -271,7 +270,7 @@ import java.util.Date;
 		@Override
 		public void saveReport() {
 			try {
-				Stmt6.setDate(1, new java.sql.Date(new Date().getTime()));
+				Stmt6.setDate(1, new java.sql.Date(System.currentTimeMillis()));
 				Stmt6.setString(3, repString);
 				Stmt6.executeQuery();
 			} catch (SQLException e) {

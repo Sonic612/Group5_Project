@@ -4,7 +4,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Calendar;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * @author jmilinsk
@@ -67,13 +68,16 @@ public class SPRecordProcess implements RecordProcess{
 	 * @return
 	 */
 	public String addRecord(int provID, int memID, int servcode, String date){
-		Calendar calendar = Calendar.getInstance();
+		long yourmilliseconds = System.currentTimeMillis();
+		SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy HH:mm:ss");    
+		Date resultdate = new Date(yourmilliseconds);
+		String timeStamp = sdf.format(resultdate);
 
 		try {
 			Stmt1.setInt(1, provID);
 			Stmt1.setInt(2, memID);
 			Stmt1.setInt(3, servcode);
-			Stmt1.setTimestamp(4, new java.sql.Timestamp(calendar.getTime().getTime()));
+			Stmt1.setDate(4, new java.sql.Date(System.currentTimeMillis());
 			Stmt1.setDate(5, java.sql.Date.valueOf(date));
 			Stmt1.executeQuery();
 		} catch (SQLException e) {
