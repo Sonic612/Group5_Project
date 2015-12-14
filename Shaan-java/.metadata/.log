@@ -1531,3 +1531,6 @@ java.lang.NullPointerException
 	at org.eclipse.scout.sdk.internal.workspace.dto.DtoAutoUpdateManager$P_ResourceChangeEventCheckJob.createAutoUpdateOperations(DtoAutoUpdateManager.java:278)
 	at org.eclipse.scout.sdk.internal.workspace.dto.DtoAutoUpdateManager$P_ResourceChangeEventCheckJob.run(DtoAutoUpdateManager.java:339)
 	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY org.eclipse.debug.ui 4 0 2015-12-13 21:20:14.440
+!MESSAGE Tab group extension: org.eclipse.cdt.launch.applicationProfileLaunchTabGroup for type org.eclipse.cdt.launch.applicationLaunchType for the [profile] mode has been replaced by extension: org.eclipse.cdt.launch.applicationProfileLaunchTabGroup

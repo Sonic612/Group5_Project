@@ -8,7 +8,7 @@ import java.sql.SQLException;
  * 
  * @author sfyock
  */
-public interface RecordProcess{
+public interface RecordProcess<T>{
 	//Constant Variables
 	/**
 	 * A constant string variable to store the name of the Data Table to which data extracted will be written to.
@@ -16,6 +16,17 @@ public interface RecordProcess{
 	String TARGET_SERVER = "jdbc:sqlserver://sonic613.database.windows.net:1433;";
 	String TARGET_DB = "ChocAn";;
 
+	/**
+	 * @param <Operand>
+	 * @param id, int variable
+	 * @return String, indicates whether record was deleted successfully or not.
+	 * @throws SQLException 
+	 */
+	String addRecord(T o);
+	
+	String addRecord(int p_id, int m_id, int s_id, String date);
+	
+	
 	/**
 	 * @param id, int variable
 	 * @return String, indicates whether record was deleted successfully or not.
@@ -26,5 +37,6 @@ public interface RecordProcess{
 	/**
 	 * Terminates the connection and close all prepared statements to the database.
 	 */
-	void termConnection();	
+	void termConnection();
+	
 }

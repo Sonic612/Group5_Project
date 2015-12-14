@@ -72,6 +72,7 @@ public class ServiceRecordProcess implements RecordProcess{
 	 * @param serv
 	 * @return
 	 */
+	@Override
 	public String addRecord(Service serv){
 		try {
 			Stmt1.setInt(1, serv.getServCode());
@@ -137,6 +138,12 @@ public class ServiceRecordProcess implements RecordProcess{
 		} catch (SQLException e) {
 			System.out.println(e.getErrorCode()+ " " + e.getMessage());
 		}
+	}
+
+	@Override
+	public String addRecord(int p_id, int m_id, int s_id, String date) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
 

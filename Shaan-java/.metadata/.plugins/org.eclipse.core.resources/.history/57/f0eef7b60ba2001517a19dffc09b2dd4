@@ -17,6 +17,17 @@ public interface RecordProcess{
 	String TARGET_DB = "ChocAn";;
 
 	/**
+	 * @param <Operand>
+	 * @param id, int variable
+	 * @return String, indicates whether record was deleted successfully or not.
+	 * @throws SQLException 
+	 */
+	String addRecord(T o);
+	
+	String addRecord(int p_id, int m_id, int s_id, String date);
+	
+	
+	/**
 	 * @param id, int variable
 	 * @return String, indicates whether record was deleted successfully or not.
 	 * @throws SQLException 

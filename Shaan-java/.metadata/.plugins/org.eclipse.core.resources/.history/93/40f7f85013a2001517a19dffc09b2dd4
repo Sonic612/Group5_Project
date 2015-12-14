@@ -11,7 +11,7 @@ import java.sql.SQLException;
  * @author sfyock
  */
 public class DCOperator {
-	final String TARGET_SERVER = "jdbc:sqlserver://sonic613.database.windows.net:1433;";
+	final String TARGET_SERVER = "jdbc:sqlserver://sonic613database.windows.net:1433;";
 	final String TARGET_DB = "ChocAn";
 	//Declaring JDBC object
 	String connString;
