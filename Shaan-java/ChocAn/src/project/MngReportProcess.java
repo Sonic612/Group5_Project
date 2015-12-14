@@ -17,6 +17,7 @@ import java.util.ArrayList;
 		
 		private Connection connection;
 		private ResultSet resultProvSet;
+		private ResultSet resultProvNameSet;
 		private ResultSet resultNumProv;
 		private ResultSet resultSumProv;
 		private ResultSet resultNumEnctrs;
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 		private PreparedStatement Stmt4;
 		private PreparedStatement Stmt5;
 		private PreparedStatement Stmt6;
+		private PreparedStatement Stmt7;
 		//
 		
 		private String repStartDate;
@@ -38,27 +40,33 @@ import java.util.ArrayList;
 		
 		final String WRITE_STMT = "INSERT INTO tbl_EFTReport(record_date,Content) VALUES(?,?);";
 		
-		final String QRY_PROVIDER = "SELECT dbo.tbl_Encounters.Prov_ID, dbo.tbl_Provider.Prov_Name, dbo.tbl_Service.SERV_fee,"
+		final String QRY_PROVIDER = "SELECT DISTINCT dbo.tbl_Encounters.Prov_ID"
+				+ "\nFROM dbo.tbl_Encounters"
+  				+ "\nJOIN dbo.tbl_Provider ON dbo.tbl_Encounters.Prov_ID = dbo.tbl_Provider.Prov_ID"
   				+ "\nJOIN dbo.tbl_Services ON dbo.tbl_Encounters.serv_code = dbo.tbl_Services.serv_code"
-  				+ "\nWHERE record_date BETWEEN ? AND ?;";
+  				+ "\nWHERE Enctr_date BETWEEN ? AND ?;";
+		
+		final String QRY_PROV_NAME = "SELECT dbo.tbl_Provider.Prov_Name AS ProviderName"
+				+ "\nFROM dbo.tbl_Provider"
+  				+ "\nWHERE Prov_ID=?;";
 		
 		final String QRY_NUMOFPROV = "SELECT COUNT(DISTINCT Prov_ID) AS NumOfProviders"
 	  				+ "\nFROM dbo.tbl_Encounters"
-	  				+ "\nWHERE record_date BETWEEN ? AND ?;";
+	  				+ "\nWHERE Enctr_date BETWEEN ? AND ?;";
 		
 		final String QRY_NUMOF_PROV_ENCTRS = "SELECT COUNT(UID) AS NumOfConsultations"
   				+ "\nFROM dbo.tbl_Encounters"
-  				+ "\nWHERE Prov_ID=? AND record_date BETWEEN ? AND ?;";
+  				+ "\nWHERE Prov_ID = ? AND Enctr_date BETWEEN ? AND ?;";
 		
 		final String QRY_PROV_TOTAL_FEE = "SELECT SUM(dbo.tbl_Services.SERV_fee) AS ProviderDues"
 				+ "\nFROM dbo.tbl_Encounters "
 				+ "\nJOIN dbo.tbl_Services ON dbo.tbl_Encounters.serv_code = dbo.tbl_Services.serv_code"
-				+ "\nWHERE Prov_ID=? AND record_date BETWEEN ? AND ?;";
+				+ "\nWHERE Prov_ID = ? AND Enctr_date BETWEEN ? AND ?;";
 		
 		final String QRY_TOTALFEE = "SELECT SUM(dbo.tbl_Services.SERV_fee) AS TotalDues"
 				+ "\nFROM dbo.tbl_Encounters "
 				+ "\nJOIN dbo.tbl_Services ON dbo.tbl_Encounters.serv_code = dbo.tbl_Services.serv_code"
-				+ "\nWHERE record_date BETWEEN ? AND ?;";
+				+ "\nWHERE Enctr_date BETWEEN ? AND ?;";
 		
 		
 		public MngReportProcess(String user, String password){
@@ -86,10 +94,11 @@ import java.util.ArrayList;
 	            Stmt4 = connection.prepareStatement(QRY_NUMOFPROV);
 	            Stmt5 = connection.prepareStatement(QRY_TOTALFEE);
 	            Stmt6 =  connection.prepareStatement(WRITE_STMT);
+	            Stmt7 = connection.prepareStatement(QRY_PROV_NAME);
 
 	    	}
 	    	catch(SQLException e){
-	    		System.out.println(e.getErrorCode()+ " " + e.getMessage());
+	    		e.printStackTrace();
 	    	}
 	    }
 
@@ -103,25 +112,26 @@ import java.util.ArrayList;
 		@Override
 		public void computeReport(String startDate, String endDate) {
 			
-			this.repStartDate = startDate;
-			this.repEndDate = endDate;
+			repStartDate = startDate;
+			repEndDate = endDate;
 			try {
 				Stmt1.setDate(1, java.sql.Date.valueOf(startDate));
 				Stmt1.setDate(2, java.sql.Date.valueOf(endDate));
 				resultProvSet = Stmt1.executeQuery();
 				connection.commit();
 				
-				Stmt4.setDate(2, java.sql.Date.valueOf(startDate));
-				Stmt4.setDate(3, java.sql.Date.valueOf(endDate));
+				Stmt4.setDate(1, java.sql.Date.valueOf(startDate));
+				Stmt4.setDate(2, java.sql.Date.valueOf(endDate));
 				resultNumEnctrs = Stmt4.executeQuery();
 				connection.commit();
 				
-				Stmt5.setDate(2, java.sql.Date.valueOf(startDate));
-				Stmt5.setDate(3, java.sql.Date.valueOf(endDate));
+				Stmt5.setDate(1, java.sql.Date.valueOf(startDate));
+				Stmt5.setDate(2, java.sql.Date.valueOf(endDate));
 				resultTotalFee = Stmt5.executeQuery();
 				connection.commit();	
+				
 			} catch (SQLException e) {
-				System.out.println(e.getErrorCode()+ " - " + e.getMessage());
+				e.printStackTrace();
 			}
 				
 		}
@@ -131,6 +141,7 @@ import java.util.ArrayList;
 			ArrayList<String> provList = new ArrayList<String>(); 
 			ArrayList<String> sqlProvList = new ArrayList<String>(); 
 			int enctrCount = 0, totalSum = 0;
+			String name = "";
 			String finalStr = "";
 			String sqlFinStr = "";
 			
@@ -138,8 +149,6 @@ import java.util.ArrayList;
 			try {
 				while(resultProvSet.next()){
 					int number = resultProvSet.getInt("Prov_ID");
-					String name = resultProvSet.getString("Prov_Address");
-					double fee = resultProvSet.getFloat("SERV_fee");
 				
 					//provider Specific statements
 					Stmt2.setInt(1, number);
@@ -153,6 +162,10 @@ import java.util.ArrayList;
 					Stmt3.setDate(3,java.sql.Date.valueOf(repEndDate));
 					resultSumProv = Stmt3.executeQuery();
 					connection.commit();
+					
+					Stmt7.setInt(1, number);
+					resultProvNameSet = Stmt7.executeQuery();
+					connection.commit();
 				
 					//Getting above values
 					int count = 0, sum = 0;
@@ -161,18 +174,25 @@ import java.util.ArrayList;
 						resultNumProv.next();
 						count = resultNumProv.getInt("NumOfConsultations");
 					} catch (SQLException e) {
-						System.out.println(e.getErrorCode()+ " - " + e.getMessage());
+						e.printStackTrace();
 					}
 				
 					try {
 						resultSumProv.next();
 						sum = resultSumProv.getInt("ProviderDues");
 					} catch (SQLException e) {
-						System.out.println(e.getErrorCode()+ " - " + e.getMessage());
+						e.printStackTrace();
+					}
+					
+					try {
+						resultProvNameSet.next();
+						name = resultProvNameSet.getString("ProviderName");
+					} catch (SQLException e) {
+						e.printStackTrace();
 					}
 					
 					String providerStr = "Provider ID: " + number + "\nProvider Name: " + name + "\nNumber of Consultations: " 
-									+ count + "\nDues towards Provider: " + sum;	
+									+ count + "\nDues towards Provider: " + sum + "\n\n";	
 					provList.add(providerStr);
 					
 					String sqlProvStr = "Provider ID: " + number + "," + "Provider Name: " + name + "," + "Number of Consulations: "
@@ -181,22 +201,22 @@ import java.util.ArrayList;
 					
 				}	
 			} catch (SQLException e) {
-				System.out.println(e.getErrorCode()+ "-" + e.getMessage());
+				e.printStackTrace();
 			}
 			
 			try {
 				resultNumEnctrs.next();
-				enctrCount = resultNumEnctrs.getInt("NumOfEncounters");
+				enctrCount = resultNumEnctrs.getInt("NumOfProviders");
 
 			} catch (SQLException e2) {
-				System.out.println(e2.getErrorCode()+ " - " + e2.getMessage());
+				e2.printStackTrace();
 			}
 				
 			try {
 				resultTotalFee.next();
 				 totalSum = resultTotalFee.getInt("TotalDues");
 			} catch (SQLException e) {
-				System.out.println(e.getErrorCode()+ " - " + e.getMessage());
+				e.printStackTrace();
 			}
 			
 			finalStr = "\nTotal number of providers with more than one consultaitons : " + Integer.toString(enctrCount) + "\nTotal dues for the week : " +
@@ -205,9 +225,8 @@ import java.util.ArrayList;
 			sqlFinStr = ",Total number of providers with more than one consultaitons: " + Integer.toString(enctrCount) + "," + "Total dues for the week : " + 
 					Integer.toString(totalSum) + ",";
 			
-			String tempStr1 = "";
-			
 			//putting together string for reporting
+			String tempStr1 = "";
 			for(int i=0;i<provList.size();i++){
 				tempStr1 += provList.get(i) + "\n";
 			}
@@ -239,7 +258,7 @@ import java.util.ArrayList;
 				connection.close();
 				
 			} catch (SQLException e) {
-				System.out.println(e.getErrorCode()+ " " + e.getMessage());
+				e.printStackTrace();
 			}
 		}
 
@@ -258,7 +277,7 @@ import java.util.ArrayList;
 				if(e.getMessage().equals("The statement did not return a result set.")){
 					return;
 				}
-				System.out.println(e.getErrorCode()+ " " + e.getMessage());
+				e.printStackTrace();
 			}
 		}
 

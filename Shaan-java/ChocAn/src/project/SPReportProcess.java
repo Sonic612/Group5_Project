@@ -33,24 +33,24 @@ public class SPReportProcess implements ReportProcess{
 
   	final String QRY_PROVIDER = "SELECT Prov_Name, Prov_ID, Prov_Address,"
   					+ "Prov_City, Prov_State,Zip"
-  					+ "\nFROM dbo.tbl_Provider "
+  					+ "\nFROM dbo.tbl_Provider"
   					+ "\nWHERE Prov_ID = ?;";
   		
-  	final String QRY_ENCOUNTER = "SELECT Enctr_date,record_date,"
+  	final String QRY_ENCOUNTER = "SELECT Enctr_date, record_date,"
   				+ " dbo.tbl_Member.Mem_Name,  dbo.tbl_Encounters.Mem_ID, dbo.tbl_Encounters.serv_code, dbo.tbl_Services.SERV_fee"
-  				+ "\nFROM dbo.tbl_Encounters "
+  				+ "\nFROM dbo.tbl_Encounters"
   				+ "\nJOIN dbo.tbl_Member ON dbo.tbl_Encounters.Mem_ID = dbo.tbl_Member.Mem_ID"
   				+ "\nJOIN dbo.tbl_Services ON dbo.tbl_Encounters.serv_code = dbo.tbl_Services.serv_code"
-  				+ "\nWHERE Prov_ID = ? AND record_date BETWEEN ? AND ?;";
+  				+ "\nWHERE Prov_ID = ? AND Enctr_date BETWEEN ? AND ?;";
   		
   	final String QRY_COUNTER = "SELECT COUNT(UID) AS NumOfEncounters"
   				+ "\nFROM dbo.tbl_Encounters"
-  				+ "\nWHERE Prov_ID = ? AND record_date BETWEEN ? AND ?;";
+  				+ "\nWHERE Prov_ID = ? AND Enctr_date BETWEEN ? AND ?;";
   		
   	final String QRY_SUM = "SELECT SUM(dbo.tbl_Services.SERV_fee) AS TotalDues"
-  				+ "\nFROM dbo.tbl_Encounters "
+  				+ "\nFROM dbo.tbl_Encounters"
   				+ "\nJOIN dbo.tbl_Services ON dbo.tbl_Encounters.serv_code = dbo.tbl_Services.serv_code"
-  				+ "\nWHERE Prov_ID = ? AND record_date BETWEEN ? AND ?;";
+  				+ "\nWHERE Prov_ID = ? AND Enctr_date BETWEEN ? AND ?;";
   	
   	// Prepared Statements
     private PreparedStatement Stmt1;
@@ -88,7 +88,7 @@ public class SPReportProcess implements ReportProcess{
 
     	}
     	catch(SQLException e){
-    		System.out.println(e.getErrorCode()+ " " + e.getMessage());
+    		e.printStackTrace();
     	}
     }
     
@@ -96,7 +96,7 @@ public class SPReportProcess implements ReportProcess{
 	public void computeReport(int id, String strDate, String endDate){	
 		try {
 			
-			Stmt1.setInt(1, id);;
+			Stmt1.setInt(1, id);
 			resultProvSet = Stmt1.executeQuery();
 			connection.commit();
 			
@@ -115,12 +115,11 @@ public class SPReportProcess implements ReportProcess{
 			Stmt4.setInt(1, id);
 			Stmt4.setDate(2, java.sql.Date.valueOf(strDate));
 			Stmt4.setDate(3, java.sql.Date.valueOf(endDate));
-			Stmt4.execute();
 			resultFSum = Stmt4.executeQuery();
 			connection.commit();
 			
 		} catch (SQLException e) {
-			System.out.println(e.getErrorCode()+ " " + e.getMessage());
+			e.printStackTrace();
 		} 	
 	}
 	
@@ -135,26 +134,23 @@ public class SPReportProcess implements ReportProcess{
 		//Result Sets parsed into a single report string
 		try {
 			while(resultProvSet.next()){
-
-	
-			String name = resultProvSet.getString("Prov_Name");
-			int number = resultProvSet.getInt("Prov_ID");
-			String address = resultProvSet.getString("Prov_Address");
-			String city = resultProvSet.getString("Prov_City");
-			String state = resultProvSet.getString("Prov_State");
-			int zip = resultProvSet.getInt("Zip");
+				String name = resultProvSet.getString("Prov_Name");
+				int number = resultProvSet.getInt("Prov_ID");
+				String address = resultProvSet.getString("Prov_Address");
+				String city = resultProvSet.getString("Prov_City");
+				String state = resultProvSet.getString("Prov_State");
+				int zip = resultProvSet.getInt("Zip");
+					
+				providerStr = "Provider Name: " + name + "\nProvider Number: " + number + "\nProvider Street Address: "
+							+ address + "\nProvider City: " + city + "\nProvider State: " + state + "\nProvider ZIP: " + zip;	
 				
-			providerStr = "Provider Name: " + name + "\nProvider Number: " + number + "\nProvider Street Address: "
-						+ address + "\nProvider City: " + city + "\nProvider State: " + state + "\nProvider ZIP: " + zip;	
-			
-			sqlProvStr = "Provider Name:" + name + "," + "Provider Number: " + Integer.toString(number) + "," 
-					+ "Provider Street Address: " + address + "," + "Provider City: " + city + "," + 
-					"Provider State: " + state + "," + "Zip: " + zip + ",";
-			
+				sqlProvStr = "Provider Name:" + name + "," + "Provider Number: " + Integer.toString(number) + "," 
+						+ "Provider Street Address: " + address + "," + "Provider City: " + city + "," + 
+						"Provider State: " + state + "," + "Zip: " + zip + ",";
 			
 			}	
 		} catch (SQLException e) {
-			System.out.println(e.getErrorCode()+ " - " + e.getMessage());
+			e.printStackTrace();
 		}
 		try {
 			while(resultEnctrSet.next()){
@@ -177,7 +173,7 @@ public class SPReportProcess implements ReportProcess{
 				sqlEnctrList.add(tempStr2);
 			}
 		} catch (SQLException e) {
-			System.out.println(e.getErrorCode()+ " - " + e.getMessage());
+			e.printStackTrace();
 		}
 		int enctrCount = -1, enctrSum  = -1;
 		
@@ -186,14 +182,14 @@ public class SPReportProcess implements ReportProcess{
 			enctrCount = resultFCount.getInt("NumOfEncounters");
 
 		} catch (SQLException e2) {
-			System.out.println(e2.getErrorCode()+ " - " + e2.getMessage());
+			e2.printStackTrace();
 		}
 			
 		try {
 			resultFSum.next();
 			 enctrSum = resultFSum.getInt("TotalDues");
 		} catch (SQLException e) {
-			System.out.println(e.getErrorCode()+ " - " + e.getMessage());
+			e.printStackTrace();
 		}
 		
 		finalStr = "\nTotal number of consultations with members : " + Integer.toString(enctrCount) + "\nTotal fee for week : " +
@@ -209,7 +205,7 @@ public class SPReportProcess implements ReportProcess{
 		
 		String sqlEnctrStr = "";
 		for(int i=0;i<sqlEnctrList.size();i++){
-			sqlEnctrStr += sqlEnctrList.get(i);
+			sqlEnctrStr += sqlEnctrList.get(i) + ",";
 		}
 		
 		repString = sqlProvStr + sqlEnctrStr + sqlFinStr;
@@ -237,7 +233,7 @@ public class SPReportProcess implements ReportProcess{
 			connection.close();
 			
 		} catch (SQLException e) {
-			System.out.println(e.getErrorCode()+ " " + e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -252,7 +248,7 @@ public class SPReportProcess implements ReportProcess{
 				if(e.getMessage().equals("The statement did not return a result set.")){
 					return;
 				}
-				System.out.println(e.getErrorCode()+ " " + e.getMessage());
+				e.printStackTrace();
 			}
 	}
 

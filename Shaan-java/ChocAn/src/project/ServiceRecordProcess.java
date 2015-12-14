@@ -20,7 +20,7 @@ public class ServiceRecordProcess implements RecordProcess{
 	
 	private Connection connection;
 	
-	final String WRITE_STMT = "INSERT INTO dbo.tbl_Services(serv_code,serv_name,SERV_fee) VALUES(?,?,?):";
+	final String WRITE_STMT = "INSERT INTO dbo.tbl_Services(serv_code,serv_name,SERV_fee) VALUES(?,?,?);";
 	final String UPDATE_STMT = "UPDATE dbo.tbl_Services "
 	+ "\nSET serv_code_ID = ?,serv_name = ?,SERV_fee = ?"
 	+ "\nWHERE serv_code = ?;";
@@ -76,7 +76,7 @@ public class ServiceRecordProcess implements RecordProcess{
 		try {
 			Stmt1.setInt(1, serv.getServCode());
 			Stmt1.setString(2, serv.getServName());
-			Stmt1.setFloat(3, (float) serv.getServFee());
+			Stmt1.setFloat(3, serv.getServFee());
 			Stmt1.executeQuery();
 		} catch (SQLException e) {
 			if(e.getMessage().equals("The statement did not return a result set.")){

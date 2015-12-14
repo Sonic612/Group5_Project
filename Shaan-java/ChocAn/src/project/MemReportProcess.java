@@ -25,19 +25,19 @@ public class MemReportProcess implements ReportProcess{
     private ResultSet resultEnctrSet;
 	
 	private String repString = "";
-	final String WRITE_STMT = "INSERT INTO dbo.tbl_MemReport(Mem_ID,record_date,Content) VALUES(?,?,?):";
+	final String WRITE_STMT = "INSERT INTO dbo.tbl_MemReport(Mem_ID,record_date,Content) VALUES(?,?,?);";
 	
-	final String QRY_MEMBER = "SELECET Mem_Name, Mem_ID, Mem_Address, "
+	final String QRY_MEMBER = "SELECT Mem_Name, Mem_ID, Mem_Address, "
 			+ "Mem_City, Mem_State, Zip "
-			+ "\nFROM tbl_Member "
-			+ "\nWHERE Mem_ID = ;";
+			+ "\nFROM dbo.tbl_Member"
+			+ "\nWHERE Mem_ID = ?;";
 
-	final String QRY_ENCOUNTER = "SELECET tbl_Encounters.Enctr_date, "
-			+ " tbl_Provider.Prov_Name, tbl_Services.serv_name"
-			+ "\nFROM tbl_Encounters "
-			+ "\nJOIN tbl_Provider \n  ON tbl_Encounters.Prov_ID = tbl_Provider.Prov_ID"
-			+ "\nJOIN tbl_Services \n ON tbl_Encounters.serv_code = tbl_Services.serv_code"
-			+ "\nWHERE Mem_ID = ? AND record_date BETWEEN ? AND ?;";
+	final String QRY_ENCOUNTER = "SELECT Enctr_date,"
+			+ " dbo.tbl_Provider.Prov_Name, dbo.tbl_Services.serv_name"
+			+ "\nFROM dbo.tbl_Encounters"
+			+ "\nJOIN dbo.tbl_Provider \n  ON dbo.tbl_Encounters.Prov_ID = dbo.tbl_Provider.Prov_ID"
+			+ "\nJOIN dbo.tbl_Services \n ON dbo.tbl_Encounters.serv_code = dbo.tbl_Services.serv_code"
+			+ "\nWHERE Mem_ID = ? AND Enctr_date BETWEEN ? AND ?;";
 	
 	//Prepared Statements
 	private PreparedStatement Stmt1;
@@ -63,13 +63,12 @@ public class MemReportProcess implements ReportProcess{
 
     	try {
             connection = DriverManager.getConnection(connString);
-            connection = DriverManager.getConnection(connString);
             Stmt1 = connection.prepareStatement(QRY_MEMBER);
             Stmt2 = connection.prepareStatement(QRY_ENCOUNTER);
             Stmt3 = connection.prepareStatement(WRITE_STMT);
     	}
     	catch(SQLException e){
-    		System.out.println(e.getErrorCode()+ " " + e.getMessage());
+    		e.printStackTrace();
     	}
     }
 
@@ -90,7 +89,7 @@ public class MemReportProcess implements ReportProcess{
 			connection.commit();
 			
 		} catch (SQLException e) {
-			System.out.println(e.getErrorCode()+ " " + e.getMessage());
+			e.printStackTrace();
 		}	
 	}
 
@@ -111,14 +110,14 @@ public class MemReportProcess implements ReportProcess{
 				String state = resultMemSet.getString("Mem_State");
 				int zip = resultMemSet.getInt("Zip");
 				
-				memStr = "Member Name : " + name + "/nMember Number : " + number + "/nMember Street Address : "
-						+ address + "/nMember City : " + city + "/nMember State  :" + state + "Member ZIP : " + zip;
+				memStr = "\nMember Name : " + name + "\nMember Number : " + number + "\nMember Street Address : "
+						+ address + "\nMember City : " + city + "\nMember State  :" + state + "\nMember ZIP : " + zip;
 				
 				sqlMemStr = "Member Name : " + name + "," + "Member Number : " + number + "," + "Member Street Address : "
 						+ address + "," + "Member City : " + city + "," + "Member State  :" + state + "," + "Member ZIP : " + zip + ",";
 			}
 		} catch (SQLException e) {
-			System.out.println(e.getErrorCode()+ " " + e.getMessage());
+			e.printStackTrace();
 		}
 		
 		try {
@@ -127,8 +126,8 @@ public class MemReportProcess implements ReportProcess{
 				String provNameStr = resultEnctrSet.getString("Prov_Name");
 				String servNameStr = resultEnctrSet.getString("serv_name");
 				
-				String tempStr = "\n-------Service Details--------\nDate of Service : " + enctrDate.toString() + "/nProvider Name: " + provNameStr
-						+ "/nService Name: " + servNameStr;
+				String tempStr = "\n-------Service Details--------\nDate of Service : " + enctrDate.toString() + "\nProvider Name: " + provNameStr
+						+ "\nService Name: " + servNameStr;
 				enctrList.add(tempStr);
 				
 				String tempStr2 = ",-------Service Details--------,Date of Service : " + enctrDate.toString() + "," + "Provider Name: " + provNameStr
@@ -136,17 +135,17 @@ public class MemReportProcess implements ReportProcess{
 				sqlEnctrList.add(tempStr2);
 			}
 		} catch (SQLException e) {
-				System.out.println(e.getErrorCode()+ " " + e.getMessage());
+			e.printStackTrace();
 				
 		}
 		
 		String enctrStr = "";
 		for(int i = 0; i < enctrList.size(); i++){
-			enctrStr += enctrList.get(i); 
+			enctrStr += enctrList.get(i) + "\n"; 
 		}
 		String tempStr3="";
 		for(int i = 0; i < sqlEnctrList.size(); i++){
-			tempStr3 += sqlEnctrList.get(i); 
+			tempStr3 += sqlEnctrList.get(i) + ","; 
 		}
 		repString = sqlMemStr + tempStr3;
 		
@@ -163,7 +162,7 @@ public class MemReportProcess implements ReportProcess{
 			resultEnctrSet.close();
 			connection.close();
 		} catch (SQLException e) {
-			System.out.println(e.getErrorCode()+ " " + e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -178,7 +177,7 @@ public class MemReportProcess implements ReportProcess{
 			if(e.getMessage().equals("The statement did not return a result set.")){
 				return;
 			}
-			System.out.println(e.getErrorCode()+ " " + e.getMessage());
+			e.printStackTrace();
 		}	
 		
 	}
