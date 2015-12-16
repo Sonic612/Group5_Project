@@ -1,8 +1,13 @@
 package Graphics.Reports;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.ParsePosition;
+import java.time.LocalDate;
 
 import Graphics.graphicsStart;
+import Main.ChocAn;
+import Main.ReportViewer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -17,28 +22,37 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 /**
- * This is the WriteReportController. It helps to create a Report and save it to
- * the database.
+ * This is the Write Report Controller for the WriteReportMenu.fxml.
  * 
  * @author sfyock
  */
+/**
+ * @author seanp_000
+ *
+ */
 public class WriteReportController {
-
+	
+	/**
+	 * This is the Decimal Formatter for the initialization process.
+	 */
+	@FXML
+	DecimalFormat format = new DecimalFormat("#");
+	
 	/**
 	 * This is the list for the Member/Provider Combo Box.
 	 */
 	@FXML
-	ObservableList<String> reportTypeList = FXCollections.observableArrayList("Member", "Provider", "Manager");
+	ObservableList<String> reportTypeList = FXCollections.observableArrayList("Member", "Provider");
 
 	/**
-	 * This is the Combo Box for the active/suspended options.
+	 * This is the Combo Box for the member/provider options.
 	 */
 	@FXML
 	private ComboBox<String> typeChoiceBox;
@@ -48,24 +62,12 @@ public class WriteReportController {
 	 */
 	@FXML
 	private Button buttonYes;
-
-	@FXML
-	private Button buttonResetDates;
-
-	@FXML
-	private Button buttonReset;
-
+	
 	/**
-	 * This is the title of the new report.
+	 * This is the reset date button.
 	 */
 	@FXML
-	private TextField reportTitleField;
-
-	/**
-	 * This is the report itself.
-	 */
-	@FXML
-	private TextArea reportArea;
+	private Button buttonResetDate;
 
 	/**
 	 * This is the label for member/provider ID.
@@ -83,24 +85,35 @@ public class WriteReportController {
 	 * This is the start date for the report
 	 */
 	@FXML
-	private DatePicker startDateSelectField;
-
-	/**
-	 * This is the end date for the report
-	 */
-	@FXML
-	private DatePicker endDateSelectField;
+	private DatePicker dateSelectField;
 
 	/**
 	 * to initialize the typeChoiceBox
 	 */
 	@FXML
 	void initialize() {
+		typeChoiceBox.setValue("Select Type");
 		typeChoiceBox.setItems(reportTypeList);
+		provMemIDField.setTextFormatter(new TextFormatter<>(c -> {
+			if (c.getControlNewText().isEmpty()) {
+				return c;
+			}
+
+			ParsePosition parsePosition = new ParsePosition(0);
+			Object object = format.parse(c.getControlNewText(), parsePosition);
+
+			if (object == null || parsePosition.getIndex() < c.getControlNewText().length()) {
+				return null;
+			} else if (c.getControlNewText().length() > 4) {
+				return null;
+			} else {
+				return c;
+			}
+		}));
 	}
 
 	/**
-	 * Submits the currently written report to the database, if possible.
+	 * The action when the user clicks the submit button.
 	 * 
 	 * @param event
 	 */
@@ -131,7 +144,7 @@ public class WriteReportController {
 	}
 
 	/**
-	 * Cancels the WriteReportMenu and generates the Report Option's Menu.
+	 * The action when the user clicks the cancel button.
 	 * 
 	 * @param event
 	 */
@@ -163,9 +176,9 @@ public class WriteReportController {
 	void onReportTypeChanged(ActionEvent event) {
 		if (typeChoiceBox.getValue().equals("Member")) {
 			memProvLabel.setVisible(true);
-			memProvLabel.setText("Member Username: ");
+			memProvLabel.setText("Member ID: ");
 			provMemIDField.setVisible(true);
-			provMemIDField.setPromptText("Enter Username");
+			provMemIDField.setPromptText("Enter ID");
 			provMemIDField.setText(null);
 		} else if (typeChoiceBox.getValue().equals("Provider")) {
 			memProvLabel.setVisible(true);
@@ -173,48 +186,24 @@ public class WriteReportController {
 			provMemIDField.setVisible(true);
 			provMemIDField.setPromptText("Enter ID");
 			provMemIDField.setText(null);
-		} else {
-			memProvLabel.setVisible(false);
-			provMemIDField.setVisible(false);
-			provMemIDField.setText(null);
 		}
 	}
 
+	/**
+	 * @param event
+	 */
 	@FXML
-	void onStartDateClick(ActionEvent event) {
-		buttonResetDates.setVisible(true);
+	void onDateClick(ActionEvent event) {
+		buttonResetDate.setVisible(true);
 	}
 
-	@FXML
-	void onEndDateClick(ActionEvent event) {
-		buttonResetDates.setVisible(true);
-	}
-
+	/**
+	 * @param event
+	 */
 	@FXML
 	void onResetDateClick(ActionEvent event) {
-		startDateSelectField.setValue(null);
-		endDateSelectField.setValue(null);
-		buttonResetDates.setVisible(false);
-	}
-
-	@FXML
-	void onResetClick(ActionEvent event) {
-		Pane paneArea = new Pane();
-
-		try {
-			paneArea = (Pane) FXMLLoader
-					.load(graphicsStart.class.getResource("gui/Reports/WriteReportController.fxml"));
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-		Stage s = new Stage();
-		s.setScene(new Scene(paneArea));
-		s.setTitle("Write Report");
-		s.show();
-
-		Node source = (Node) event.getSource();
-		Stage stage = (Stage) source.getScene().getWindow();
-		stage.close();
+		dateSelectField.setValue(null);
+		buttonResetDate.setVisible(false);
 	}
 
 	/**
@@ -224,16 +213,9 @@ public class WriteReportController {
 	 */
 	@FXML
 	boolean checkEmptyErrors() {
-		String fullStringError = "\nA title" + "\nThe actual report" + "\nSelect type of Report" + "\nA start date"
-				+ "\nA end date";
+		String fullStringError = "\nSelect type of Report" + "\nA Date";
 		String errorString = "";
 
-		if (reportTitleField.getText().isEmpty()) {
-			errorString = errorString + "\nA title";
-		}
-		if (reportArea.getText().isEmpty()) {
-			errorString = errorString + "\nThe actual report";
-		}
 		if (typeChoiceBox.getValue().equals("Select Type")) {
 			errorString = errorString + "\nSelect type of Report";
 		} else if (provMemIDField.getText() == null) {
@@ -242,11 +224,13 @@ public class WriteReportController {
 			else if (typeChoiceBox.getValue().equals("Member"))
 				errorString = errorString + "\nA Member ID";
 		}
-		if (startDateSelectField.getValue() == null) {
-			errorString = errorString + "\nA start date";
+		if (dateSelectField.getValue() == null) {
+			errorString = errorString + "\nA Date";
 		}
-		if (endDateSelectField.getValue() == null) {
-			errorString = errorString + "\nAn end date";
+		
+		if((dateSelectField.getValue() != null) && dateSelectField.getValue().isAfter(LocalDate.now())){
+			error();
+			return false;
 		}
 
 		if (errorString.equals(fullStringError)) {
@@ -262,6 +246,8 @@ public class WriteReportController {
 	}
 
 	/**
+	 * The action when the user clicks the Write New Report button.
+	 * 
 	 * @param button
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -271,9 +257,17 @@ public class WriteReportController {
 
 			@Override
 			public void handle(Event event) {
-				String doesNotExist = "";
-				if (doesNotExist.equals("")) {
-					
+				String doesNotExist;
+				ReportViewer view = ChocAn.getReports();
+				
+				int provMemID = Integer.parseInt(provMemIDField.getText());
+				
+				int type = (typeChoiceBox.getValue().equals("Member")) ? 1 : 0;
+				
+				view.GenReport(type, provMemID, dateSelectField.getValue().toString());
+				doesNotExist = view.viewReport();
+				
+				if (!doesNotExist.equals("")) {
 					Pane messagePane = null;
 					try {
 						messagePane = (Pane) FXMLLoader
@@ -296,7 +290,8 @@ public class WriteReportController {
 					Node source = (Node) event.getSource();
 					Stage stage = (Stage) source.getScene().getWindow();
 					stage.close();
-				} else{
+				}
+				else{
 					Pane messagePane = null;
 					try {
 						messagePane = (Pane) FXMLLoader
@@ -331,7 +326,7 @@ public class WriteReportController {
 			@FXML
 			void setMessageLabel(Label label, String doesNotExist) {
 				if (doesNotExist.equals("")) {
-					label.setText("Error: No Member Record Found!");
+					label.setText("Error: No Reports Available!");
 				} else {
 					//System.out.println(doesNotExist);
 					label.setText(doesNotExist);
@@ -345,18 +340,45 @@ public class WriteReportController {
 	 */
 	@FXML
 	void setLabel(Label l) {
-		l.setText(l.getText() + "\nNew report will be saved as:" + "\nName:\t\t" + reportTitleField.getText()
-				+ "\nDate:\t\t" + startDateSelectField.getValue().toString() + "\nUnder User:\t"
+		l.setText("\nNew report will be saved as:" + "\nType:\t\t" + typeChoiceBox.getValue().toString()
+				+ "\nDate:\t\t" + dateSelectField.getValue().toString() + "\nUnder User:\t"
 				+ provMemIDField.getText());
 	}
-
+	
+	@FXML
+	void setErrorLabel(Label l) {
+		l.setText(l.getText() + "Your selected date must be before or equal to today.");
+	}
+	
 	/**
 	 * @param l
 	 * @param str
 	 */
 	@FXML
 	void setErrorLabel(Label l, String str) {
-		l.setText(l.getText() + "You are missing " + str + " in your new report.");
+		l.setText(l.getText() + "To show the report you must have:" + str);
+	}
+	
+	@FXML
+	void error() {
+		// Error Menu setup
+		GridPane paneArea = new GridPane();
+		Label label;
+
+		try {
+			paneArea = (GridPane) FXMLLoader
+					.load(graphicsStart.class.getResource("gui/Messages/ErrorMessageMenu.fxml"));
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+
+		label = (Label) paneArea.getChildren().get(1);
+		setErrorLabel(label);
+
+		Stage s = new Stage();
+		s.setScene(new Scene(paneArea));
+		s.setTitle("Error!");
+		s.show();
 	}
 
 	@FXML

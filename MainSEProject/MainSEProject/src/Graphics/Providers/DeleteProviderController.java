@@ -138,8 +138,9 @@ public class DeleteProviderController {
 			public void handle(Event event) {
 				DCOperator op = ChocAn.getOperator();
 				String doesNotExist;
-				System.out.println("Clicked Yes to delete Provider.");
-				doesNotExist = op.delProvider(provIDField.getText());
+				
+				int provID = Integer.parseInt(provIDField.getText());
+				doesNotExist = op.delProvider(provID);
 
 				Pane messagePane = null;
 				try {

@@ -20,11 +20,18 @@ public class ReportViewer {
 
 	   
 	    //SQL queries
-	    final String SELECT_STMT = "SELECT Content" + 
+	    final String SELECT_MEM_STMT = "SELECT Content" + 
+	    				"\nFROM dbo.tbl_MemReport \nWHERE Mem_ID = ? AND record_date = ?;";
+	    
+	    //SQL queries
+	    final String SELECT_PROV_STMT = "SELECT Content" + 
 	    				"\nFROM dbo.tbl_ProvReport \nWHERE Prov_ID = ? AND record_date = ?;";
- 	
+	    
+	    
+	    
 	  	// Prepared Statements
 	    private PreparedStatement Stmt1;
+	    private PreparedStatement Stmt2;
    
 		// Constructor
 	    public ReportViewer(String user, String password){
@@ -45,7 +52,8 @@ public class ReportViewer {
 	  	    	
 	    	try {
 	            connection = DriverManager.getConnection(connString);
-	            Stmt1 = connection.prepareStatement(SELECT_STMT);
+	            Stmt1 = connection.prepareStatement(SELECT_PROV_STMT);
+	            Stmt2 = connection.prepareStatement(SELECT_MEM_STMT);
 	            System.out.println("Successfully entered Report Viewer!");
 	    	} catch (SQLException e) {
 				System.out.println(e.getErrorCode()+ " " + e.getMessage());
@@ -61,15 +69,27 @@ public class ReportViewer {
 			return connectionError;
 		}
 	    
-	    public void GenReport(int id,String date){
+	    public void GenReport(int type, int id,String date){
+	    	if(type == 0){
 	    	try {
 				Stmt1.setInt(1, id);
 				Stmt1.setDate(2, java.sql.Date.valueOf(date));
-		    	resultSet = Stmt1.executeQuery();
+				resultSet = Stmt1.executeQuery();
 		    	connection.commit();
 			} catch (SQLException e) {
 				System.out.println(e.getErrorCode()+ " " + e.getMessage());
 			}
+	    	}
+	    	else if(type == 1){
+		    	try {
+					Stmt2.setInt(1, id);
+					Stmt2.setDate(2, java.sql.Date.valueOf(date));
+					resultSet = Stmt2.executeQuery();
+			    	connection.commit();
+				} catch (SQLException e) {
+					System.out.println(e.getErrorCode()+ " " + e.getMessage());
+				}
+		    	}
 	    	
 	    }
 	    
@@ -78,10 +98,14 @@ public class ReportViewer {
 	    	String processStr = "";
 	    	
 	    	try {
-				while(resultSet.next()){
+				if(!resultSet.next()) return "";
+			
+				else{
+					while(resultSet.next()){					
 					repStream += resultSet.getString("Content");
-				}
-				resultSet.close();
+					}
+					resultSet.close();
+	    			}
 			} catch (SQLException e) {
 				System.out.println( e.getErrorCode()+ " " + e.getMessage());
 			}

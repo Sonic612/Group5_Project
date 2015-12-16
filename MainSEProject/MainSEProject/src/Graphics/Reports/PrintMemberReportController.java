@@ -25,8 +25,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 /**
- * This is the PrintMemberReportController. It helps to find and print a member
- * report.
+ * This is the Print Member Report Controller for the PrintMemberReportMenu.fxml.
  * 
  * @author sfyock
  */
@@ -77,7 +76,7 @@ public class PrintMemberReportController {
 	}
 
 	/**
-	 * Finds and Prints the provider report if possible.
+	 * The action when the user clicks the Write New Report button.
 	 * 
 	 * @param event
 	 */
@@ -106,7 +105,7 @@ public class PrintMemberReportController {
 	}
 
 	/**
-	 * Cancels the PrintMemberReportMenu and generates the Report Option's Menu.
+	 * The action when the user clicks the Write New Report button.
 	 * 
 	 * @param event
 	 */

@@ -3,6 +3,7 @@ package Graphics.Services;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.ParsePosition;
+import java.time.LocalDate;
 
 import Graphics.graphicsStart;
 import Main.ChocAn;
@@ -51,6 +52,12 @@ public class SPRecordController {
 
 	@FXML
 	private DatePicker encounterDatePickerField;
+
+	@FXML
+	private Button buttonOk;
+
+	@FXML
+	private Label servInfoLabel;
 
 	@FXML
 	void initialize() {
@@ -165,6 +172,12 @@ public class SPRecordController {
 			errorString = errorString + "\nAn Encounter Date";
 		}
 
+		if ((encounterDatePickerField.getValue() != null)
+				&& encounterDatePickerField.getValue().isAfter(LocalDate.now())) {
+			error();
+			return false;
+		}
+
 		if (errorString.equals(fullStringError)) {
 			error("\nEverything!");
 			return false;
@@ -175,6 +188,27 @@ public class SPRecordController {
 
 		else
 			return true;
+	}
+
+	@FXML
+	void onOkClick(ActionEvent event) {
+
+		if (!servCodeField.getText().equals("")) {
+			servInfoLabel.setVisible(true);
+			SPRecordProcess record = ChocAn.getSPRecord();
+			int servCode = Integer.parseInt(servCodeField.getText());
+			String servName = record.getServName(servCode);
+			String servFee = record.getServFee(servCode);
+			if(servName != "" && servFee != "")
+				servInfoLabel.setText("Service Name: " + servName + "\nService Fee: " + servFee);
+			else{
+				servInfoLabel.setText("There is no service code input.");
+			}
+
+		} else {
+			servInfoLabel.setVisible(true);
+			servInfoLabel.setText("There is no service code input.");
+		}
 	}
 
 	@FXML
@@ -266,8 +300,35 @@ public class SPRecordController {
 	}
 
 	@FXML
+	void setErrorLabel(Label l) {
+		l.setText(l.getText() + "Your encounter date must be before today.");
+	}
+
+	@FXML
 	void setErrorLabel(Label l, String str) {
 		l.setText(l.getText() + "To record the encounter report you need: " + str);
+	}
+
+	@FXML
+	void error() {
+		// Error Menu setup
+		GridPane paneArea = new GridPane();
+		Label label;
+
+		try {
+			paneArea = (GridPane) FXMLLoader
+					.load(graphicsStart.class.getResource("gui/Messages/ErrorMessageMenu.fxml"));
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+
+		label = (Label) paneArea.getChildren().get(1);
+		setErrorLabel(label);
+
+		Stage s = new Stage();
+		s.setScene(new Scene(paneArea));
+		s.setTitle("Error!");
+		s.show();
 	}
 
 	@FXML

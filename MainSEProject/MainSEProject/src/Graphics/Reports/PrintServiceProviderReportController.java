@@ -25,8 +25,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 /**
- * This is the PrintProviderReportController. It helps to find and print a
- * provider report.
+ * This is the Print Service Provider Report Controller for the PrintServiceProviderReportMenu.fxml.
  * 
  * @author sfyock
  */
@@ -77,7 +76,7 @@ public class PrintServiceProviderReportController {
 	}
 
 	/**
-	 * Finds and Prints the provider report if possible.
+	 * The action when the user clicks the Write New Report button.
 	 * 
 	 * @param event
 	 */
@@ -106,7 +105,7 @@ public class PrintServiceProviderReportController {
 	}
 
 	/**
-	 * Cancels the PrintMemberReportMenu and generates the Report Option's Menu.
+	 * The action when the user clicks the Write New Report button.
 	 * 
 	 * @param event
 	 */
@@ -129,6 +128,9 @@ public class PrintServiceProviderReportController {
 		stage.close();
 	}
 
+	/**
+	 * @return
+	 */
 	@FXML
 	boolean checkEmptyErrors() {
 		String fullStringError = "\nA Me" + "\nA Last Name" + "\nA First Name";
@@ -162,6 +164,9 @@ public class PrintServiceProviderReportController {
 			return true;
 	}
 
+	/**
+	 * @param event
+	 */
 	@FXML
 	void onDateResetClick(ActionEvent event) {
 		startDatePickerField.setValue(null);
@@ -169,11 +174,17 @@ public class PrintServiceProviderReportController {
 		buttonDateReset.setVisible(false);
 	}
 
+	/**
+	 * @param event
+	 */
 	@FXML
 	void onEndDateClick(ActionEvent event) {
 		buttonDateReset.setVisible(true);
 	}
 
+	/**
+	 * @param event
+	 */
 	@FXML
 	void onStartDateClick(ActionEvent event) {
 		buttonDateReset.setVisible(true);
@@ -286,16 +297,26 @@ public class PrintServiceProviderReportController {
 				+ endDatePickerField.getValue().toString());
 	}
 
+	/**
+	 * @param l
+	 */
 	@FXML
 	void setErrorLabel(Label l) {
 		l.setText(l.getText() + "Your end date must be greater than your start date.");
 	}
-
+	
+	/**
+	 * @param l
+	 * @param str
+	 */
 	@FXML
 	void setErrorLabel(Label l, String str) {
 		l.setText(l.getText() + "To print your provider report you need: " + str);
 	}
 
+	/**
+	 * 
+	 */
 	@FXML
 	void error() {
 		// Error Menu setup

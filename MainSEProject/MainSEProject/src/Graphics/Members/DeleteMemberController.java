@@ -137,10 +137,10 @@ public class DeleteMemberController {
 			@Override
 			public void handle(Event event) {
 				DCOperator op = ChocAn.getOperator();
-				System.out.println("Clicked Yes to delete Member.");
 				String doesNotExist;
-
-				doesNotExist = op.delMember(memIDField.getText());
+				
+				int memID = Integer.parseInt(memIDField.getText());
+				doesNotExist = op.delMember(memID);
 
 				Pane messagePane = null;
 				try {
@@ -156,11 +156,11 @@ public class DeleteMemberController {
 
 				Stage s = new Stage();
 				s.setScene(new Scene(messagePane));
+				s.setTitle("Message");
 				s.show();
 
 				Node source = (Node) event.getSource();
 				Stage stage = (Stage) source.getScene().getWindow();
-				stage.setTitle("Message");
 				stage.close();
 			}
 
@@ -219,7 +219,7 @@ public class DeleteMemberController {
 		setErrorLabel(label);
 		Stage s = new Stage();
 		s.setScene(new Scene(paneArea));
-		s.setTitle("Error...");
+		s.setTitle("Error!");
 		s.show();
 	}
 

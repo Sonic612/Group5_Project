@@ -180,7 +180,6 @@ public class UpdateServiceController {
 			@Override
 			public void handle(Event event) {
 				ServiceRecordProcess servRecord = ChocAn.getServices();
-				System.out.println("Clicked Yes for New Member.");
 				String doesNotExist;
 
 				int servCode = Integer.parseInt(servCodeField.getText());

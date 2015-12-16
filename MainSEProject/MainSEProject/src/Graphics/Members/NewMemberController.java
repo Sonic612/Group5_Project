@@ -25,7 +25,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 /**
- * This is the new member controller for DeleteMemberMenu.fxml.
+ * This is the new member controller for NewMemberMenu.fxml.
  * 
  * @author sfyock
  */
@@ -92,7 +92,7 @@ public class NewMemberController extends AreYouSureController {
 	private TextField stateField;
 
 	/**
-	 * This is the text field for the zip code.
+	 * This is the text field for the zipCode.
 	 */
 	@FXML
 	private TextField zipCodeField;
@@ -176,8 +176,6 @@ public class NewMemberController extends AreYouSureController {
 		if (checkEmptyErrors()) {
 
 			buttonReset.setVisible(true);
-			int zipCode = Integer.parseInt(zipCodeField.getText());
-			int memID = Integer.parseInt(memIDField.getText());
 			fullName = lNameField.getText() + ", " + fNameField.getText();
 
 			Pane paneArea = new Pane();
@@ -192,7 +190,7 @@ public class NewMemberController extends AreYouSureController {
 			label = (Label) paneArea.getChildren().get(2);
 			setLabel(label);
 			buttonYes = (Button) paneArea.getChildren().get(0);
-			onYesClick(buttonYes, zipCode, memID);
+			onYesClick(buttonYes);
 
 			Stage s = new Stage();
 			s.setScene(new Scene(paneArea));
@@ -284,7 +282,7 @@ public class NewMemberController extends AreYouSureController {
 		}
 
 		if (errorString.equals(fullStringError)) {
-			error("\nEverything!");
+			error("\n\tEverything!");
 			return false;
 		} else if (!errorString.isEmpty()) {
 			error(errorString);
@@ -304,14 +302,16 @@ public class NewMemberController extends AreYouSureController {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@FXML
-	void onYesClick(Button button, int zipCode, int memID) {
+	void onYesClick(Button button) {
 		button.setOnAction(new EventHandler() {
 
 			@Override
 			public void handle(Event event) {
 				DCOperator op = ChocAn.getOperator();
-				System.out.println("Clicked Yes for New Member.");
 				String doesNotExist;
+
+				int zipCode = Integer.parseInt(zipCodeField.getText());
+				int memID = Integer.parseInt(memIDField.getText());
 
 				Member mem = new Member(memID, fNameField.getText(), lNameField.getText(), stAddrField.getText(),
 						cityField.getText(), stateField.getText(), zipCode, true, false);
@@ -337,7 +337,6 @@ public class NewMemberController extends AreYouSureController {
 				Node source = (Node) event.getSource();
 				Stage stage = (Stage) source.getScene().getWindow();
 				stage.close();
-
 			}
 
 			/**
@@ -391,7 +390,8 @@ public class NewMemberController extends AreYouSureController {
 		Label label;
 
 		try {
-			paneArea = (GridPane) FXMLLoader.load(graphicsStart.class.getResource("gui/Messages/ErrorMessageMenu.fxml"));
+			paneArea = (GridPane) FXMLLoader
+					.load(graphicsStart.class.getResource("gui/Messages/ErrorMessageMenu.fxml"));
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
@@ -399,7 +399,7 @@ public class NewMemberController extends AreYouSureController {
 		setErrorLabel(label, str);
 		Stage s = new Stage();
 		s.setScene(new Scene(paneArea));
-		s.setTitle("Error...");
+		s.setTitle("Error!");
 		s.show();
 	}
 

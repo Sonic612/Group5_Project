@@ -20,6 +20,11 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+/**
+ * This is the Print Manager Report Controller for the PrintManagerReportMenu.fxml.
+ * 
+ * @author sfyock
+ */
 public class PrintManagerReportController {
 	
 	/**
@@ -28,15 +33,29 @@ public class PrintManagerReportController {
 	@FXML
 	private Button buttonYes;
 	
-	@FXML
-	private DatePicker endDatePickerField;
-
-	@FXML
-	private DatePicker startDatePickerField;
-
+	/**
+	 * This is the reset button.
+	 */
 	@FXML
 	private Button buttonDateReset;
-
+	
+	/**
+	 * This is the start date picker field.
+	 */
+	@FXML
+	private DatePicker startDatePickerField;
+	
+	/**
+	 * This is the end date picker field.
+	 */
+	@FXML
+	private DatePicker endDatePickerField;
+	
+	/**
+	 * The action when the user clicks the Write New Report button.
+	 * 
+	 * @param event
+	 */
 	@FXML
 	void onReportPrintClick(ActionEvent event) {
 		if (checkEmptyErrors()) {
@@ -61,6 +80,11 @@ public class PrintManagerReportController {
 		}
 	}
 
+	/**
+	 * The action when the user clicks the Write New Report button.
+	 * 
+	 * @param event
+	 */
 	@FXML
 	void onCancelClick(ActionEvent event) {
 		Stage s = new Stage();

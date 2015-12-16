@@ -7,16 +7,27 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.stage.Stage;
 
+/**
+ * This is the message controller for ReportMessageMenu.fxml.
+ * @author sfyock
+ *
+ */
 public class ReportMessageController {
 
+	/**
+	 * This is the scroll pane.
+	 */
 	@FXML
     private ScrollPane scrollPane;
 	
+	/**
+	 * This is the report label.
+	 */
 	@FXML
-	private Label reprotLabel;
+	private Label reportLabel;
     
     /**
-	 * The action event when the user clicks the Ok button.
+	 * The action event when the user clicks the ok button.
 	 * 
 	 * @param event
 	 */

@@ -3,6 +3,7 @@ package Main;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -23,12 +24,16 @@ public class DCOperator {
 
 	final String ADD_MEM_STMT = "INSERT INTO dbo.tbl_Member(Mem_ID,Mem_Name,Mem_Address,Mem_City,Mem_State,Zip,isActive,isSuspended) VALUES(?,?,?,?,?,?,?,?);";
 	final String DEL_MEM_STMT = "DELETE FROM dbo.tbl_Member WHERE Mem_ID = ?;";
+	final String SEL_MEM_STMT = "SELECT 1 FROM dbo.tbl_Member WHERE Mem_ID = ?;";
+	final String DEL_MEMENCTR_STMT = "DELETE FROM dbo.tbl_Encounters WHERE Mem_ID = ?;";
 	final String UPDATE_MEM_STMT = "UPDATE dbo.tbl_Member "
 			+ "\nSET Mem_ID = ?,Mem_Name = ?,Mem_Address = ?,Mem_City = ?,Mem_State = ?,Zip = ?, isActive = ?, isSuspended = ?"
 			+ "\nWHERE Mem_ID = ?;";
 
 	final String ADD_PROV_STMT = "INSERT INTO dbo.tbl_Provider(Prov_ID,Prov_Name,Prov_Address,Prov_City,Prov_State,Zip) VALUES(?,?,?,?,?,?);";
 	final String DEL_PROV_STMT = "DELETE FROM dbo.tbl_Provider WHERE Prov_ID = ?;";
+	final String DEL_PROVENCTR_STMT = "DELETE FROM dbo.tbl_Encounters WHERE Prov_ID = ?;";
+	final String SEL_PROV_STMT = "SELECT 1 FROM dbo.tbl_Provider WHERE Prov_ID = ?;";
 	final String UPDATE_PROV_STMT = "UPDATE dbo.tbl_Provider "
 			+ "\nSET Prov_ID = ?,Prov_Name = ?,Prov_Address = ?,Prov_City = ?,Prov_State = ?,Zip = ?"
 			+ "\nWHERE Prov_ID = ?;";
@@ -40,6 +45,12 @@ public class DCOperator {
 	private PreparedStatement Stmt4;
 	private PreparedStatement Stmt5;
 	private PreparedStatement Stmt6;
+	private PreparedStatement Stmt7;
+	private PreparedStatement Stmt8;
+	private PreparedStatement Stmt9;
+	private PreparedStatement Stmt10;
+
+	ResultSet resultSet;
 
 	public DCOperator(String user, String password) {
 		init(user, password);
@@ -60,6 +71,11 @@ public class DCOperator {
 			Stmt4 = connection.prepareStatement(ADD_PROV_STMT);
 			Stmt5 = connection.prepareStatement(DEL_PROV_STMT);
 			Stmt6 = connection.prepareStatement(UPDATE_PROV_STMT);
+			Stmt7 = connection.prepareStatement(DEL_MEMENCTR_STMT);
+			Stmt8 = connection.prepareStatement(DEL_PROVENCTR_STMT);
+			Stmt9 = connection.prepareStatement(SEL_MEM_STMT);
+			Stmt10 = connection.prepareStatement(SEL_PROV_STMT);
+
 			System.out.println("Successfully entered DCOperator!");
 		} catch (SQLException e) {
 			System.out.println(e.getErrorCode() + " " + e.getMessage());
@@ -81,7 +97,7 @@ public class DCOperator {
 		int suspended;
 		active = (mem.isActive()) ? 1 : 0;
 		suspended = (mem.isSusp()) ? 1 : 0;
-		
+
 		try {
 			Stmt1.setInt(1, mem.getMemID());
 			Stmt1.setString(2, mem.getMemFName() + ", " + mem.getMemLName());
@@ -95,21 +111,40 @@ public class DCOperator {
 			return "The new member has been successfuly added!";
 
 		} catch (SQLException e) {
+			if (e.getMessage().equals("The statement did not return a result set.")) {
+				return "Member Already Exist!";
+			}
 			return e.getErrorCode() + " " + e.getMessage();
 		}
 	}
 
-	public String delMember(String memID) {
+	public String delMember(int memID) {
 		try {
-			Stmt2.setInt(1, Integer.parseInt(memID));
-			Stmt2.execute();
+			Stmt9.setInt(1, memID);
+			resultSet = Stmt9.executeQuery();
 		} catch (SQLException e) {
 			if (e.getMessage().equals("The statement did not return a result set.")) {
 				return "Member Does Not Exist!";
 			}
 			return e.getErrorCode() + " " + e.getMessage();
 		}
-		return "Member Record Successfuly Deleted!";
+		
+		try {
+			if (resultSet.next()) {
+				Stmt2.setInt(1, memID);
+				Stmt7.setInt(1, memID);
+				Stmt7.execute();
+				Stmt2.execute();
+				return "Member Record Successfuly Deleted!";
+			}
+			else return "No Such Member Record Found!";
+		} catch (SQLException e) {
+			if (e.getMessage().equals("The statement did not return a result set.")) {
+				return "Member Does Not Exist!";
+			}
+			return e.getErrorCode() + " " + e.getMessage();
+		}
+		
 	}
 
 	public String updateMember(Member mem) {
@@ -117,25 +152,39 @@ public class DCOperator {
 		int suspended;
 		active = (mem.isActive()) ? 1 : 0;
 		suspended = (mem.isSusp()) ? 1 : 0;
-		
+
 		try {
-			Stmt3.setInt(1, mem.getMemID());
-			Stmt3.setString(2, mem.getMemFName() + mem.getMemLName());
-			Stmt3.setString(3, mem.getMemStAddr());
-			Stmt3.setString(4, mem.getMemCity());
-			Stmt3.setString(5, mem.getMemSt());
-			Stmt3.setInt(6, mem.getMemZip());
-			Stmt3.setInt(7, mem.getMemID());
-			Stmt3.setInt(8, active);
-			Stmt3.setInt(9, suspended);
-			Stmt3.execute();
+			Stmt9.setInt(1, mem.getMemID());
+			resultSet = Stmt9.executeQuery();
 		} catch (SQLException e) {
 			if (e.getMessage().equals("The statement did not return a result set.")) {
 				return "Member Does Not Exist!";
 			}
 			return e.getErrorCode() + " " + e.getMessage();
 		}
-		return "Member has been successfuly updated!";
+		try {
+			if (resultSet.next()) {
+
+				Stmt3.setInt(1, mem.getMemID());
+				Stmt3.setString(2, mem.getMemFName() + mem.getMemLName());
+				Stmt3.setString(3, mem.getMemStAddr());
+				Stmt3.setString(4, mem.getMemCity());
+				Stmt3.setString(5, mem.getMemSt());
+				Stmt3.setInt(6, mem.getMemZip());
+				Stmt3.setInt(7, active);
+				Stmt3.setInt(8, suspended);
+				Stmt3.setInt(9, mem.getMemID());
+				Stmt3.execute();
+				return "Member has been successfuly updated!";
+			} else
+				return "Member record does not exist!";
+		} catch (SQLException e) {
+			if (e.getMessage().equals("The statement did not return a result set.")) {
+				return "Member Does Not Exist!";
+			}
+			return e.getErrorCode() + " " + e.getMessage();
+		}
+
 	}
 
 	/**
@@ -150,29 +199,46 @@ public class DCOperator {
 			Stmt4.setString(5, prov.getProvSt());
 			Stmt4.setInt(6, prov.getProvZip());
 			Stmt4.execute();
+			return "New Provider Record Successfuly Added!";
 		} catch (SQLException e) {
 			if (e.getMessage().equals("The statement did not return a result set.")) {
 				return "Provider already exists!";
 			}
 			return e.getErrorCode() + " " + e.getMessage();
 		}
-		return "New Provider Record Successfuly Added!";
+
 	}
 
 	/**
 	 * @param prov
 	 */
-	public String delProvider(String provZip) {
+	public String delProvider(int provID) {
 		try {
-			Stmt5.setInt(1, Integer.parseInt(provZip));
-			Stmt5.execute();
+			Stmt10.setInt(1, provID);
+			resultSet = Stmt10.executeQuery();
 		} catch (SQLException e) {
 			if (e.getMessage().equals("The statement did not return a result set.")) {
 				return "Provider Does Not Exist!";
 			}
 			return e.getErrorCode() + " " + e.getMessage();
 		}
-		return "Provider Record Successfuly Deleted!";
+		
+		try {
+			if (resultSet.next()) {
+				Stmt5.setInt(1, provID);
+				Stmt8.setInt(1, provID);
+				Stmt8.execute();
+				Stmt5.execute();
+				return "Provider Record Successfuly Deleted!";
+			} 
+			else return "No Provider Record Found!";	
+		}catch (SQLException e) {
+			if (e.getMessage().equals("The statement did not return a result set.")) {
+				return "Provider Does Not Exist!";
+			}
+			return e.getErrorCode() + " " + e.getMessage();
+		}
+
 	}
 
 	/**
@@ -180,21 +246,33 @@ public class DCOperator {
 	 */
 	public String updateProvider(Provider prov) {
 		try {
-			Stmt6.setInt(1, prov.getProvID());
-			Stmt6.setString(2, prov.getProvName());
-			Stmt6.setString(3, prov.getProvStAddr());
-			Stmt6.setString(4, prov.getProvCity());
-			Stmt6.setString(5, prov.getProvSt());
-			Stmt6.setInt(6, prov.getProvZip());
-			Stmt6.setInt(7, prov.getProvID());
-			Stmt6.execute();
+			Stmt10.setInt(1, prov.getProvID());
+			resultSet = Stmt10.executeQuery();
 		} catch (SQLException e) {
 			if (e.getMessage().equals("The statement did not return a result set.")) {
 				return "Provider Does Not Exist!";
 			}
 			return e.getErrorCode() + " " + e.getMessage();
 		}
-		return "Provider Record Successfuly Updated!";
+		try {
+			if (resultSet.next()) {
+				Stmt6.setInt(1, prov.getProvID());
+				Stmt6.setString(2, prov.getProvName());
+				Stmt6.setString(3, prov.getProvStAddr());
+				Stmt6.setString(4, prov.getProvCity());
+				Stmt6.setString(5, prov.getProvSt());
+				Stmt6.setInt(6, prov.getProvZip());
+				Stmt6.setInt(7, prov.getProvID());
+				Stmt6.execute();
+				return "Provider Record Successfuly Updated!";
+			} else
+				return "No Provider Record Found!";
+		} catch (SQLException e) {
+			if (e.getMessage().equals("The statement did not return a result set.")) {
+				return "Provider Does Not Exist!";
+			}
+			return e.getErrorCode() + " " + e.getMessage();
+		}
 	}
 
 	/**

@@ -3,6 +3,7 @@ package Main;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Calendar;
 
@@ -22,10 +23,16 @@ public class SPRecordProcess implements RecordProcess{
 	
 	private Connection connection;
     private PreparedStatement Stmt1;
+    private PreparedStatement Stmt2;
+    private PreparedStatement Stmt3;
+    private ResultSet rsName;
+    private ResultSet rsFee;
 
 	//SQL queries
     final String WRITE_STMT = "INSERT INTO dbo.tbl_Encounters(Prov_ID,Mem_ID,serv_code,record_date,Enctr_date) VALUES(?,?,?,?,?);";
-    
+    final String NAME_STMT = "SELECT serv_name FROM dbo.tbl_Services WHERE serv_code = ?;";
+    final String FEE_STMT = "SELECT SERV_fee FROM dbo.tbl_Services WHERE serv_code = ?;";
+
 	/**
 	 * @param user
 	 * @param password
@@ -53,6 +60,9 @@ public class SPRecordProcess implements RecordProcess{
 		try {
 			connection = DriverManager.getConnection(connString);
 			Stmt1 = connection.prepareStatement(WRITE_STMT);
+			Stmt2 = connection.prepareStatement(NAME_STMT);
+			Stmt3 = connection.prepareStatement(FEE_STMT);
+
 			System.out.println("Successfully entered SPRecord!");
 		}
 		catch(SQLException e){
@@ -94,6 +104,43 @@ public class SPRecordProcess implements RecordProcess{
 			System.out.println(e.getErrorCode()+ " " + e.getMessage());
 		}
 		return "Encounter record was added Successfuly!";
+	}
+	
+	public String getServName(int servCode){	
+		String name="";
+		try {
+			Stmt2.setInt(1, servCode);
+			rsName = Stmt2.executeQuery();
+			if(rsName==null) return "";
+			else{
+					while(rsName.next()){
+						name = rsName.getString("serv_name");
+						return name;		
+					}	
+				} 
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return "";
+	}
+	
+	public String getServFee(int servCode){
+		String feeStr = "";
+		try {
+			Stmt3.setInt(1, servCode);
+			rsFee = Stmt3.executeQuery();
+			if(rsFee==null) return "";
+			else{
+					while(rsFee.next()){
+						double fee = rsFee.getDouble("SERV_fee");
+						feeStr = Double.toString(fee);
+						return feeStr;
+					}	
+				} 
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return "";
 	}
 
 	@Override

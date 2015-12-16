@@ -27,7 +27,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 /**
- * This is the delete member controller for DeleteMemberMenu.fxml.
+ * This is the update member controller for UpdateMemberMenu.fxml.
  * 
  * @author sfyock
  */
@@ -58,7 +58,7 @@ public class UpdateMemberController {
 	private Button buttonYes;
 
 	/**
-	 * The is the reset button for the new member menu.
+	 * The is the reset button for the update member menu.
 	 */
 	@FXML
 	private Button buttonReset;
@@ -106,7 +106,7 @@ public class UpdateMemberController {
 	private TextField stateField;
 
 	/**
-	 * This is the text field for the zip code.
+	 * This is the text field for the zipCode.
 	 */
 	@FXML
 	private TextField zipCodeField;
@@ -266,7 +266,7 @@ public class UpdateMemberController {
 	}
 
 	/**
-	 * Returns a boolean of true is member is active.
+	 * Returns a boolean of true if member is active.
 	 * 
 	 * @return
 	 */
@@ -278,7 +278,7 @@ public class UpdateMemberController {
 	}
 
 	/**
-	 * Returns a boolean of true is member is suspended.
+	 * Returns a boolean of true if member is suspended.
 	 * 
 	 * @return
 	 */
@@ -323,7 +323,7 @@ public class UpdateMemberController {
 		}
 
 		if (errorString.equals(fullStringError)) {
-			error("\nEverything!");
+			error("\n\tEverything!");
 			return false;
 		} else if (!errorString.isEmpty()) {
 			error(errorString);
@@ -350,17 +350,17 @@ public class UpdateMemberController {
 			@Override
 			public void handle(Event event) {
 				DCOperator op = ChocAn.getOperator();
-				System.out.println("Clicked Yes to update Member.");
 				String doesNotExist;
 
 				int zipCode = Integer.parseInt(zipCodeField.getText());
-				int	memID = Integer.parseInt(memIDField.getText());
+				int memID = Integer.parseInt(memIDField.getText());
 
 				boolean suspend = isSuspended();
 				boolean active = isActive();
 
-				doesNotExist = op.updateMember(new Member(memID, fNameField.getText(), lNameField.getText(),
-						stAddrField.getText(), cityField.getText(), stateField.getText(), zipCode, active, suspend));
+				Member mem = new Member(memID, fNameField.getText(), lNameField.getText(), stAddrField.getText(),
+						cityField.getText(), stateField.getText(), zipCode, active, suspend);
+				doesNotExist = op.updateMember(mem);
 
 				Pane messagePane = null;
 				try {
@@ -376,11 +376,11 @@ public class UpdateMemberController {
 
 				Stage s = new Stage();
 				s.setScene(new Scene(messagePane));
+				s.setTitle("Message");
 				s.show();
 
 				Node source = (Node) event.getSource();
 				Stage stage = (Stage) source.getScene().getWindow();
-				stage.setTitle("Message");
 				stage.close();
 			}
 
@@ -443,7 +443,7 @@ public class UpdateMemberController {
 		setErrorLabel(label, str);
 		Stage s = new Stage();
 		s.setScene(new Scene(paneArea));
-		s.setTitle("Error...");
+		s.setTitle("Error!");
 		s.show();
 	}
 }

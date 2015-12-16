@@ -3,6 +3,7 @@ package Main;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -26,13 +27,17 @@ public class ServiceRecordProcess implements RecordProcess{
 	+ "\nSET serv_code = ?,serv_name = ?,SERV_fee = ?"
 	+ "\nWHERE serv_code = ?;";
 	final String DEL_STMT = "DELETE FROM dbo.tbl_Services WHERE serv_code = ?;";
+	final String SEL_STMT = "SELECT 1 FROM dbo.tbl_Services WHERE serv_code = ?;";
+	final String DELENCTR_STMT = "DELETE FROM dbo.tbl_Encounters WHERE serv_code = ?;";
 
 	
 	//Prepared Statements
 	private PreparedStatement Stmt1;
 	private PreparedStatement Stmt2;
 	private PreparedStatement Stmt3;
-
+	private PreparedStatement Stmt4;
+	private PreparedStatement Stmt5;
+	private ResultSet resultSet;
 
 	/**
 	 * @param user
@@ -62,6 +67,8 @@ public class ServiceRecordProcess implements RecordProcess{
             Stmt1 = connection.prepareStatement(WRITE_STMT);
             Stmt2 = connection.prepareStatement(UPDATE_STMT);
             Stmt3 = connection.prepareStatement(DEL_STMT);
+            Stmt4 = connection.prepareStatement(DELENCTR_STMT);
+            Stmt5 = connection.prepareStatement(SEL_STMT);
             System.out.println("Successfully entered Service Record!");
 
 		} catch(SQLException e){
@@ -103,20 +110,31 @@ public class ServiceRecordProcess implements RecordProcess{
 	 * @return
 	 */
 	public String UpdateRecord(Service serv){
+		try{
+			Stmt5.setInt(1, serv.getServCode());
+			resultSet = Stmt5.executeQuery();
+		} catch (SQLException e) {
+			if (e.getMessage().equals("The statement did not return a result set.")) {
+				return "Service Does Not Exist!";
+			}
+			return e.getErrorCode() + " " + e.getMessage();
+		}
 		try {
-			Stmt2.setInt(1, serv.getServCode());
-			Stmt2.setString(2, serv.getServName());
-			Stmt2.setDouble(3, serv.getServFee());
-			Stmt2.setInt(4, serv.getServCode());
-			Stmt2.execute();
+			if(resultSet.next()){
+				Stmt2.setInt(1, serv.getServCode());
+				Stmt2.setString(2, serv.getServName());
+				Stmt2.setDouble(3, serv.getServFee());
+				Stmt2.setInt(4, serv.getServCode());
+				Stmt2.execute();
+				return "Service Successfuly Updated!";
+			}
+			else return "Service Record not Found!";
 		} catch (SQLException e) {
 			if(e.getMessage().equals("The statement did not return a result set.")){
 				return "No Result Set!";
 			}
 			return e.getErrorCode()+ " " + e.getMessage();
 		}	
-		return "Service Successfuly Updated!";
-
 	}
 
 	/**
@@ -125,16 +143,31 @@ public class ServiceRecordProcess implements RecordProcess{
 	 */
 	@Override
 	public String deleteRecord(int servCode){
+		try{
+			Stmt5.setInt(1, servCode);
+			resultSet = Stmt5.executeQuery();
+		} catch (SQLException e) {
+			if (e.getMessage().equals("The statement did not return a result set.")) {
+				return "Service Does Not Exist!";
+			}
+			return e.getErrorCode() + " " + e.getMessage();
+		}
 		try {
-			Stmt3.setInt(1, servCode);
-			Stmt3.execute();
+			if(resultSet.next()){
+				Stmt3.setInt(1, servCode);
+				Stmt4.setInt(1, servCode);
+				Stmt4.execute();
+				Stmt3.execute();
+				return "Service Successfuly Deleted!";
+			}
+			else return "No Service Record Found!";
 		} catch (SQLException e) {
 			if(e.getMessage().equals("The statement did not return a result set.")){
 				return "No Result Set!";
 			}
 			return e.getErrorCode()+ " " + e.getMessage();
 		}	
-		return "Service Successfuly Deleted!";
+		
 
 	}
 
