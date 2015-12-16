@@ -10,7 +10,7 @@ public class Service {
 
     private int servCode;
     private String servName;
-    private float servFee;
+    private double servFee;
 
     /**
      * Constructor method provides a invocation call [blueprint] for creating service object
@@ -19,7 +19,7 @@ public class Service {
      * @param inName string variable for setting the servName
      * @param inAmt double variable for setting the servFee
      */
-    public Service(int inCode,String inName, float inAmt){
+    public Service(int inCode,String inName, double inAmt){
           this.servCode = inCode;
           this.servName = inName;
           this.servFee = inAmt;
@@ -63,7 +63,7 @@ public class Service {
      * Sets the servFee field of the object
      * @param inAmt double variable to be assigned to servFee field.
      */
-    public void setServFee(float inAmt){
+    public void setServFee(double inAmt){
           this.servFee = inAmt;
      }
 
@@ -71,7 +71,7 @@ public class Service {
      * return the servFee field set that service object
      * @return double servFee variable
      */
-    public float getServFee(){
+    public double getServFee(){
       	return this.servFee;
   	}
 }

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane alignment="CENTER" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Graphics.Messages.ReportMessageController">
+  <columnConstraints>
+      <ColumnConstraints />
+      <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="0.0" minWidth="0.0" prefWidth="0.0" />
+      <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="0.0" minWidth="0.0" prefWidth="0.0" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+  </rowConstraints>
+   <children>
+      <Button alignment="CENTER" defaultButton="true" mnemonicParsing="false" onAction="#onOkClick" text="Ok" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+      <ScrollPane fx:id="scrollPane" vbarPolicy="NEVER" GridPane.rowIndex="1">
+         <content>
+            <Label fx:id="reportLabel" alignment="CENTER" text="Label" />
+         </content>
+      </ScrollPane>
+   </children>
+</GridPane>

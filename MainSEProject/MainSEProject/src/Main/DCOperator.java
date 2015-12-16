@@ -21,10 +21,10 @@ public class DCOperator {
 	String connectionError;
 	Connection connection;
 
-	final String ADD_MEM_STMT = "INSERT INTO dbo.tbl_Member(Mem_ID,Mem_Name,Mem_Address,Mem_City,Mem_State,Zip) VALUES(?,?,?,?,?,?);";
+	final String ADD_MEM_STMT = "INSERT INTO dbo.tbl_Member(Mem_ID,Mem_Name,Mem_Address,Mem_City,Mem_State,Zip,isActive,isSuspended) VALUES(?,?,?,?,?,?,?,?);";
 	final String DEL_MEM_STMT = "DELETE FROM dbo.tbl_Member WHERE Mem_ID = ?;";
 	final String UPDATE_MEM_STMT = "UPDATE dbo.tbl_Member "
-			+ "\nSET Mem_ID = ?,Mem_Name = ?,Mem_Address = ?,Mem_City = ?,Mem_State = ?,Zip = ?"
+			+ "\nSET Mem_ID = ?,Mem_Name = ?,Mem_Address = ?,Mem_City = ?,Mem_State = ?,Zip = ?, isActive = ?, isSuspended = ?"
 			+ "\nWHERE Mem_ID = ?;";
 
 	final String ADD_PROV_STMT = "INSERT INTO dbo.tbl_Provider(Prov_ID,Prov_Name,Prov_Address,Prov_City,Prov_State,Zip) VALUES(?,?,?,?,?,?);";
@@ -77,6 +77,11 @@ public class DCOperator {
 	}
 
 	public String addMember(Member mem) {
+		int active;
+		int suspended;
+		active = (mem.isActive()) ? 1 : 0;
+		suspended = (mem.isSusp()) ? 1 : 0;
+		
 		try {
 			Stmt1.setInt(1, mem.getMemID());
 			Stmt1.setString(2, mem.getMemFName() + ", " + mem.getMemLName());
@@ -84,7 +89,9 @@ public class DCOperator {
 			Stmt1.setString(4, mem.getMemCity());
 			Stmt1.setString(5, mem.getMemSt());
 			Stmt1.setInt(6, mem.getMemZip());
-			Stmt1.executeQuery();
+			Stmt1.setInt(7, active);
+			Stmt1.setInt(8, suspended);
+			Stmt1.execute();
 			return "The new member has been successfuly added!";
 
 		} catch (SQLException e) {
@@ -95,7 +102,7 @@ public class DCOperator {
 	public String delMember(String memID) {
 		try {
 			Stmt2.setInt(1, Integer.parseInt(memID));
-			Stmt2.executeQuery();
+			Stmt2.execute();
 		} catch (SQLException e) {
 			if (e.getMessage().equals("The statement did not return a result set.")) {
 				return "Member Does Not Exist!";
@@ -106,6 +113,11 @@ public class DCOperator {
 	}
 
 	public String updateMember(Member mem) {
+		int active;
+		int suspended;
+		active = (mem.isActive()) ? 1 : 0;
+		suspended = (mem.isSusp()) ? 1 : 0;
+		
 		try {
 			Stmt3.setInt(1, mem.getMemID());
 			Stmt3.setString(2, mem.getMemFName() + mem.getMemLName());
@@ -114,10 +126,12 @@ public class DCOperator {
 			Stmt3.setString(5, mem.getMemSt());
 			Stmt3.setInt(6, mem.getMemZip());
 			Stmt3.setInt(7, mem.getMemID());
-			Stmt3.executeQuery();
+			Stmt3.setInt(8, active);
+			Stmt3.setInt(9, suspended);
+			Stmt3.execute();
 		} catch (SQLException e) {
 			if (e.getMessage().equals("The statement did not return a result set.")) {
-				return "There is no such member!";
+				return "Member Does Not Exist!";
 			}
 			return e.getErrorCode() + " " + e.getMessage();
 		}
@@ -135,10 +149,10 @@ public class DCOperator {
 			Stmt4.setString(4, prov.getProvCity());
 			Stmt4.setString(5, prov.getProvSt());
 			Stmt4.setInt(6, prov.getProvZip());
-			Stmt4.executeQuery();
+			Stmt4.execute();
 		} catch (SQLException e) {
 			if (e.getMessage().equals("The statement did not return a result set.")) {
-				return "No ResultSet Returned!";
+				return "Provider already exists!";
 			}
 			return e.getErrorCode() + " " + e.getMessage();
 		}
@@ -151,10 +165,10 @@ public class DCOperator {
 	public String delProvider(String provZip) {
 		try {
 			Stmt5.setInt(1, Integer.parseInt(provZip));
-			Stmt5.executeQuery();
+			Stmt5.execute();
 		} catch (SQLException e) {
 			if (e.getMessage().equals("The statement did not return a result set.")) {
-				return "No ResultSet Returned!";
+				return "Provider Does Not Exist!";
 			}
 			return e.getErrorCode() + " " + e.getMessage();
 		}
@@ -173,10 +187,10 @@ public class DCOperator {
 			Stmt6.setString(5, prov.getProvSt());
 			Stmt6.setInt(6, prov.getProvZip());
 			Stmt6.setInt(7, prov.getProvID());
-			Stmt6.executeQuery();
+			Stmt6.execute();
 		} catch (SQLException e) {
 			if (e.getMessage().equals("The statement did not return a result set.")) {
-				return "No ResultSet Returned!";
+				return "Provider Does Not Exist!";
 			}
 			return e.getErrorCode() + " " + e.getMessage();
 		}

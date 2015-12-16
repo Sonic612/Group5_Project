@@ -29,11 +29,12 @@
 <fullyQualifiedTypeName name="Main.Provider"/>
 <fullyQualifiedTypeName name="Main.ReportViewer"/>
 <fullyQualifiedTypeName name="Main.SPRecordProcess"/>
-<fullyQualifiedTypeName name="Main.SPReportProcess"/>
-<fullyQualifiedTypeName name="Main.ServiceRecordProcess"/>
-<fullyQualifiedTypeName name="Main.MemReportProcess"/>
 <fullyQualifiedTypeName name="Main.MngReportProcess"/>
 <fullyQualifiedTypeName name="Main.ChocAn"/>
 <fullyQualifiedTypeName name="javafx.fxml.FXML"/>
+<fullyQualifiedTypeName name="Main.ServiceRecordProcess"/>
+<fullyQualifiedTypeName name="Main.Service"/>
+<fullyQualifiedTypeName name="Main.MemReportProcess"/>
+<fullyQualifiedTypeName name="Main.SPReportProcess"/>
 <fullyQualifiedTypeName name="javafx.event.ActionEvent"/>
 </qualifiedTypeNameHistroy>

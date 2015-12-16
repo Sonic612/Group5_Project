@@ -13,3 +13,4 @@
 1450118298019	Move file
 1450218580484	Rename field 'userIDField'
 1450219841534	Rename field 'dateSelectField'
+1450243299042	Rename local variable 'memID'

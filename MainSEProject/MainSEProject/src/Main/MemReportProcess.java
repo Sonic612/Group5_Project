@@ -150,7 +150,6 @@ public class MemReportProcess implements ReportProcess{
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-				
 		}
 		
 		String enctrStr = "";

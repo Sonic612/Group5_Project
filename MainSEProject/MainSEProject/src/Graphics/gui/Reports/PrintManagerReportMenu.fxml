@@ -7,13 +7,13 @@
 
 <Pane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Graphics.Reports.PrintManagerReportController">
    <children>
-      <Button layoutX="109.0" layoutY="107.0" mnemonicParsing="false" onAction="#onReportPrintClick" text="Print Report" />
-      <Button layoutX="199.0" layoutY="107.0" mnemonicParsing="false" onAction="#onCancelClick" text="Cancel" />
-      <Button fx:id="buttonDateReset" layoutX="17.0" layoutY="78.0" mnemonicParsing="false" onAction="#onDateResetClick" text="Reset Date" visible="false" />
+      <Label layoutX="23.0" layoutY="29.0" text="Start Date: " />
+      <DatePicker fx:id="startDatePickerField" editable="false" layoutX="105.0" layoutY="25.0" onAction="#onStartDateClick" prefHeight="25.0" prefWidth="149.0" promptText="Select Start Date" />
       <Label layoutX="23.0" layoutY="68.0" text="End Date: " />
       <DatePicker fx:id="endDatePickerField" editable="false" layoutX="105.0" layoutY="64.0" onAction="#onEndDateClick" prefHeight="25.0" prefWidth="149.0" promptText="Select End Date" />
-      <DatePicker fx:id="startDatePickerField" editable="false" layoutX="105.0" layoutY="25.0" onAction="#onStartDateClick" prefHeight="25.0" prefWidth="149.0" promptText="Select Start Date" />
-      <Label layoutX="23.0" layoutY="29.0" text="Start Date: " />
+      <Button fx:id="buttonDateReset" layoutX="23.0" layoutY="107.0" mnemonicParsing="false" onAction="#onDateResetClick" text="Reset Date" visible="false" />
+      <Button layoutX="109.0" layoutY="107.0" mnemonicParsing="false" onAction="#onReportPrintClick" text="Print Report" />
+      <Button cancelButton="true" layoutX="199.0" layoutY="107.0" mnemonicParsing="false" onAction="#onCancelClick" text="Cancel" />
    </children>
    <padding>
       <Insets bottom="10.0" left="10.0" right="20.0" top="10.0" />

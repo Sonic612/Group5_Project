@@ -1,0 +1,318 @@
+package Graphics.Reports;
+
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.ParsePosition;
+
+import Graphics.graphicsStart;
+import Main.ChocAn;
+import Main.MemReportProcess;
+import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
+
+/**
+ * This is the PrintMemberReportController. It helps to find and print a member
+ * report.
+ * 
+ * @author sfyock
+ */
+public class PrintMemberReportController {
+
+	/**
+	 * This is the Decimal Formatter for the initialization process.
+	 */
+	@FXML
+	DecimalFormat format = new DecimalFormat("#");
+
+	/**
+	 * This is the yes button in the AreYouSureMenu.
+	 */
+	@FXML
+	private Button buttonYes;
+
+	@FXML
+	private TextField memIDField;
+
+	@FXML
+	private DatePicker startDatePickerField;
+
+	@FXML
+	private DatePicker endDatePickerField;
+
+	@FXML
+	private Button buttonDateReset;
+
+	@FXML
+	void initialize() {
+		memIDField.setTextFormatter(new TextFormatter<>(c -> {
+			if (c.getControlNewText().isEmpty()) {
+				return c;
+			}
+
+			ParsePosition parsePosition = new ParsePosition(0);
+			Object object = format.parse(c.getControlNewText(), parsePosition);
+
+			if (object == null || parsePosition.getIndex() < c.getControlNewText().length()) {
+				return null;
+			} else if (c.getControlNewText().length() > 4) {
+				return null;
+			} else {
+				return c;
+			}
+		}));
+	}
+
+	/**
+	 * Finds and Prints the provider report if possible.
+	 * 
+	 * @param event
+	 */
+	@FXML
+	void onReportPrintClick(ActionEvent event) {
+		if (checkEmptyErrors()) {
+
+			Pane paneArea = new Pane();
+			Label label;
+
+			try {
+				paneArea = (Pane) FXMLLoader.load(graphicsStart.class.getResource("gui/Messages/AreYouSureMenu.fxml"));
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+
+			label = (Label) paneArea.getChildren().get(2);
+			setLabel(label);
+			buttonYes = (Button) paneArea.getChildren().get(0);
+			onYesClick(buttonYes);
+
+			Stage s = new Stage();
+			s.setScene(new Scene(paneArea));
+			s.show();
+		}
+	}
+
+	/**
+	 * Cancels the PrintMemberReportMenu and generates the Report Option's Menu.
+	 * 
+	 * @param event
+	 */
+	@FXML
+	void onCancelClick(ActionEvent event) {
+		Pane paneArea = new Pane();
+
+		try {
+			paneArea = (Pane) FXMLLoader.load(graphicsStart.class.getResource("gui/Reports/ReportOptionsMenu.fxml"));
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		Stage s = new Stage();
+		s.setScene(new Scene(paneArea));
+		s.setTitle("Report Options Menu");
+		s.show();
+
+		Node source = (Node) event.getSource();
+		Stage stage = (Stage) source.getScene().getWindow();
+		stage.close();
+	}
+
+	@FXML
+	boolean checkEmptyErrors() {
+		String fullStringError = "\nA Me" + "\nA Last Name" + "\nA First Name";
+		String errorString = "";
+
+		if (memIDField.getText().isEmpty()) {
+			errorString = errorString + "\nA Member ID";
+		}
+		if (startDatePickerField.getValue() == null) {
+			errorString = errorString + "\nA Start Date";
+		}
+		if (startDatePickerField.getValue() == null) {
+			errorString = errorString + "\nAn End Date";
+		}
+
+		if ((startDatePickerField.getValue() != null && startDatePickerField.getValue() != null)
+				&& startDatePickerField.getValue().isAfter(endDatePickerField.getValue())) {
+			error();
+			return false;
+		}
+
+		if (errorString.equals(fullStringError)) {
+			error("\nEverything!");
+			return false;
+		} else if (!errorString.isEmpty()) {
+			error(errorString);
+			return false;
+		}
+
+		else
+			return true;
+	}
+
+	@FXML
+	void onDateResetClick(ActionEvent event) {
+		startDatePickerField.setValue(null);
+		endDatePickerField.setValue(null);
+		buttonDateReset.setVisible(false);
+	}
+
+	@FXML
+	void onEndDateClick(ActionEvent event) {
+		buttonDateReset.setVisible(true);
+	}
+
+	@FXML
+	void onStartDateClick(ActionEvent event) {
+		buttonDateReset.setVisible(true);
+	}
+
+	/**
+	 * The action when the user clicks the yes button in the AreYouSureMenu.
+	 * 
+	 * @param button
+	 * @param zipCode
+	 * @param memID
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@FXML
+	void onYesClick(Button button) {
+		button.setOnAction(new EventHandler() {
+
+			@Override
+			public void handle(Event event) {
+				MemReportProcess memReport = ChocAn.getMemReport();
+				System.out.println("Clicked Yes for New Member.");
+				String doesNotExist;
+
+				int memID = Integer.parseInt(memIDField.getText());
+				
+				
+				memReport.computeReport(memID, startDatePickerField.getValue().toString(),
+						endDatePickerField.getValue().toString());
+				doesNotExist = memReport.printReport();
+				
+				if(!doesNotExist.equals("") || !doesNotExist.equals(null))
+					memReport.saveReport(memID);
+				
+				Pane messagePane = null;
+				try {
+					messagePane = (Pane) FXMLLoader
+							.load(graphicsStart.class.getResource("gui/Messages/ErrorMessageMenu.fxml"));
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				Label label;
+
+				label = (Label) messagePane.getChildren().get(1);
+				setMessageLabel(label, doesNotExist);
+
+				Stage s = new Stage();
+				s.setScene(new Scene(messagePane));
+				s.setTitle("Report Message");
+				s.show();
+
+				Node source = (Node) event.getSource();
+				Stage stage = (Stage) source.getScene().getWindow();
+				stage.close();
+
+			}
+
+			/**
+			 * This sets up a success/failure message label in an error message
+			 * menu.
+			 * 
+			 * @param label
+			 * @param doesNotExist
+			 */
+			@FXML
+			void setMessageLabel(Label label, String doesNotExist) {
+				if(doesNotExist.equals("") || doesNotExist.equals(null)){
+					label.setText("Error: No Member Record Found!");
+				} else {
+				System.out.println(doesNotExist);
+				label.setText(doesNotExist);
+				}
+			}
+		});
+
+	}
+
+	/**
+	 * Sets up label of the AreYouSureMenu.
+	 * 
+	 * @param l
+	 */
+	@FXML
+	void setLabel(Label l) {
+		l.setText(l.getText() + "\nMember ID:\t" + memIDField.getText() + "\nStart Date:\t"
+				+ startDatePickerField.getValue().toString() + "\nEnd Date:\t\t"
+				+ endDatePickerField.getValue().toString());
+	}
+
+	@FXML
+	void setErrorLabel(Label l) {
+		l.setText(l.getText() + "Your end date must be greater than your start date.");
+	}
+
+	@FXML
+	void setErrorLabel(Label l, String str) {
+		l.setText(l.getText() + "To print your member report you need: " + str);
+	}
+
+	@FXML
+	void error() {
+		// Error Menu setup
+		GridPane paneArea = new GridPane();
+		Label label;
+
+		try {
+			paneArea = (GridPane) FXMLLoader
+					.load(graphicsStart.class.getResource("gui/Messages/ErrorMessageMenu.fxml"));
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+
+		label = (Label) paneArea.getChildren().get(1);
+		setErrorLabel(label);
+
+		Stage s = new Stage();
+		s.setScene(new Scene(paneArea));
+		s.setTitle("Error!");
+		s.show();
+	}
+
+	@FXML
+	void error(String str) {
+		// Error Menu setup
+		GridPane paneArea = new GridPane();
+		Label label;
+
+		try {
+			paneArea = (GridPane) FXMLLoader
+					.load(graphicsStart.class.getResource("gui/Messages/ErrorMessageMenu.fxml"));
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+
+		label = (Label) paneArea.getChildren().get(1);
+		setErrorLabel(label, str);
+
+		Stage s = new Stage();
+		s.setScene(new Scene(paneArea));
+		s.setTitle("Error!");
+		s.show();
+	}
+
+}

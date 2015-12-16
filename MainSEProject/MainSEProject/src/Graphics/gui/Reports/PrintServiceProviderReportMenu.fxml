@@ -7,15 +7,15 @@
 
 <Pane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Graphics.Reports.PrintServiceProviderReportController">
    <children>
-      <TextField fx:id="provIDField" layoutX="141.0" layoutY="23.0" promptText="Enter Provider ID" />
-      <Button layoutX="141.0" layoutY="119.0" mnemonicParsing="false" onAction="#onReportPrintClick" text="Print Report" />
-      <Button layoutX="238.0" layoutY="119.0" mnemonicParsing="false" onAction="#onCancelClick" text="Cancel" />
       <Label layoutX="51.0" layoutY="25.0" text="Provider ID:" />
-      <Button fx:id="buttonDateReset" layoutX="51.0" layoutY="119.0" mnemonicParsing="false" onAction="#onDateResetClick" text="Reset Date" />
+      <TextField fx:id="provIDField" layoutX="141.0" layoutY="23.0" promptText="Enter Provider ID" />
+      <Label layoutX="50.0" layoutY="54.0" text="Start Date: " />
+      <DatePicker fx:id="startDatePickerField" editable="false" layoutX="141.0" layoutY="52.0" onAction="#onStartDateClick" prefHeight="25.0" prefWidth="149.0" promptText="Select Start Date" />
       <Label layoutX="50.0" layoutY="84.0" text="End Date: " />
       <DatePicker fx:id="endDatePickerField" editable="false" layoutX="141.0" layoutY="82.0" onAction="#onEndDateClick" prefHeight="25.0" prefWidth="149.0" promptText="Select End Date" />
-      <DatePicker fx:id="startDatePickerField" editable="false" layoutX="141.0" layoutY="52.0" onAction="#onStartDateClick" prefHeight="25.0" prefWidth="149.0" promptText="Select Start Date" />
-      <Label layoutX="50.0" layoutY="54.0" text="Start Date: " />
+      <Button fx:id="buttonDateReset" layoutX="51.0" layoutY="119.0" mnemonicParsing="false" onAction="#onDateResetClick" text="Reset Date" visible="false" />
+      <Button layoutX="141.0" layoutY="119.0" mnemonicParsing="false" onAction="#onReportPrintClick" text="Print Report" />
+      <Button cancelButton="true" layoutX="238.0" layoutY="119.0" mnemonicParsing="false" onAction="#onCancelClick" text="Cancel" />
    </children>
    <padding>
       <Insets bottom="10.0" left="10.0" right="50.0" top="10.0" />

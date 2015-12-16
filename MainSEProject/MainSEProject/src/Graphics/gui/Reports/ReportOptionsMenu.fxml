@@ -17,8 +17,8 @@
       <Button layoutX="20.0" layoutY="57.0" mnemonicParsing="false" onAction="#onWriteRepClick" prefHeight="52.0" prefWidth="118.0" text="Write Report" textAlignment="CENTER" wrapText="true" />
       <Button layoutX="147.0" layoutY="57.0" mnemonicParsing="false" onAction="#onMemRepClick" prefHeight="52.0" prefWidth="118.0" text="Print Member Report" textAlignment="CENTER" wrapText="true" />
       <Button layoutX="20.0" layoutY="121.0" mnemonicParsing="false" onAction="#onSerProvRepClick" prefHeight="52.0" prefWidth="118.0" text="Print Service Provider Report" textAlignment="CENTER" wrapText="true" />
-      <Button layoutX="97.0" layoutY="184.0" mnemonicParsing="false" onAction="#onBTMenuClick" text="Back To Menu" />
       <Button layoutX="147.0" layoutY="121.0" mnemonicParsing="false" onAction="#onManagerRepClick" prefHeight="52.0" prefWidth="118.0" text="Print Manager Report" textAlignment="CENTER" wrapText="true" />
+      <Button cancelButton="true" layoutX="97.0" layoutY="184.0" mnemonicParsing="false" onAction="#onBTMenuClick" text="Back To Menu" />
    </children>
    <padding>
       <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

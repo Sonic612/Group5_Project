@@ -7,7 +7,7 @@ import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
 /**
- * This is the are you sure controller for AreYouSureMenu.fxml.
+ * This is the error controller for ErrorMessageMenu.fxml.
  * 
  * @author sfyock
  */

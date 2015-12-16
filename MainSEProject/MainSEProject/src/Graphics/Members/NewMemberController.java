@@ -331,11 +331,11 @@ public class NewMemberController extends AreYouSureController {
 
 				Stage s = new Stage();
 				s.setScene(new Scene(messagePane));
+				s.setTitle("Message");
 				s.show();
 
 				Node source = (Node) event.getSource();
 				Stage stage = (Stage) source.getScene().getWindow();
-				stage.setTitle("Message");
 				stage.close();
 
 			}

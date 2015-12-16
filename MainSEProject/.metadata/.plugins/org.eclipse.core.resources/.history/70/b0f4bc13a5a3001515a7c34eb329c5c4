@@ -1,0 +1,104 @@
+package Graphics.Services;
+
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.ParsePosition;
+
+import Graphics.graphicsStart;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
+
+public class NewServiceController {
+	
+	/**
+	 * This is the Decimal Formatter for the initialization process.
+	 */
+	@FXML
+	DecimalFormat format = new DecimalFormat("#");
+	
+	/**
+	 * This is the Decimal Formatter for the initialization process.
+	 */
+	@FXML
+	DecimalFormat money = new DecimalFormat("#");
+	
+	@FXML
+	private TextField servCodeField;
+
+	@FXML
+	private TextField servNameField;
+
+	@FXML
+	private TextField servFeeField;
+	
+	/**
+	 * The initialization of this controller. Sets up formats for text fields.
+	 */
+	@FXML
+	void initialize() {
+		servCodeField.setTextFormatter(new TextFormatter<>(c -> {
+			if (c.getControlNewText().isEmpty()) {
+				return c;
+			}
+
+			ParsePosition parsePosition = new ParsePosition(0);
+			Object object = format.parse(c.getControlNewText(), parsePosition);
+
+			if (object == null || parsePosition.getIndex() < c.getControlNewText().length()) {
+				return null;
+			} else if (c.getControlNewText().length() > 4) {
+				return null;
+			} else {
+				return c;
+			}
+		}));
+		servFeeField.setTextFormatter(new TextFormatter<>(c -> {
+			if (c.getControlNewText().isEmpty()) {
+				return c;
+			}
+			ParsePosition parsePosition = new ParsePosition(0);
+			Object object = format.parse(c.getControlNewText(), parsePosition);
+
+			if (object == null || parsePosition.getIndex() < c.getControlNewText().length()) {
+				return null;
+			} else if (c.getControlNewText().length() > 5) {
+				return null;
+			} else {
+				return c;
+			}
+		}));
+	}
+	
+	@FXML
+	void onSubmitClick(ActionEvent event) {
+		
+	}
+
+	@FXML
+	void onCancelClick(ActionEvent event) {
+		Stage s = new Stage();
+
+		Pane mainpane = null;
+		try {
+			mainpane = (Pane) FXMLLoader
+					.load(graphicsStart.class.getResource("gui/Services/ServiceOptionsMenu.fxml"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		s.setScene(new Scene(mainpane));
+		s.setTitle("Service Menu");
+		s.show();
+
+		Node source = (Node) event.getSource();
+		Stage stage = (Stage) source.getScene().getWindow();
+		stage.close();
+	}
+
+}

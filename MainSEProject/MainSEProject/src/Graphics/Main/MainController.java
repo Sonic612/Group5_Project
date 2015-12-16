@@ -109,17 +109,17 @@ public class MainController {
 	 * @param event
 	 */
 	@FXML
-	void onSProviderClick(ActionEvent event) {
+	void onServClick(ActionEvent event) {
 		Stage s = new Stage();
 
 		Pane mainpane = null;
 		try {
-			mainpane = (Pane) FXMLLoader.load(graphicsStart.class.getResource("gui/Services/ServiceProviderOptionsMenu.fxml"));
+			mainpane = (Pane) FXMLLoader.load(graphicsStart.class.getResource("gui/Services/ServiceOptionsMenu.fxml"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		s.setScene(new Scene(mainpane));
-		s.setTitle("Service Provider Menu");
+		s.setTitle("Service Menu");
 		s.show();
 
 		Node source = (Node) event.getSource();
@@ -127,6 +127,30 @@ public class MainController {
 		stage.close();
 	}
 
+	/**
+	 * The action event when you click the Service Provider Record button.
+	 * 
+	 * @param event
+	 */
+	@FXML
+	void onSPRecordClick(ActionEvent event) {
+		Stage s = new Stage();
+
+		Pane mainpane = null;
+		try {
+			mainpane = (Pane) FXMLLoader.load(graphicsStart.class.getResource("gui/Services/ServiceProviderRecordMenu.fxml"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		s.setScene(new Scene(mainpane));
+		s.setTitle("SP Record");
+		s.show();
+
+		Node source = (Node) event.getSource();
+		Stage stage = (Stage) source.getScene().getWindow();
+		stage.close();
+	}
+	
 	/**
 	 * The action event when you click the Log Out button.
 	 * 

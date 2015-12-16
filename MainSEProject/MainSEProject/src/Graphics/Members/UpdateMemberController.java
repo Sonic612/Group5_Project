@@ -296,23 +296,36 @@ public class UpdateMemberController {
 	 */
 	@FXML
 	boolean checkEmptyErrors() {
+		String fullStringError = "\nA Member ID" + "\nA Last Name" + "\nA First Name" + "\nA Street Address"
+				+ "\nA City" + "\nA State" + "\nA Zip Code";
 		String errorString = "";
 
 		if (memIDField.getText().isEmpty()) {
 			errorString = errorString + "\nA Member ID";
-		} else if (lNameField.getText().isEmpty() && fNameField.getText().isEmpty() && stAddrField.getText().isEmpty()
-				&& cityField.getText().isEmpty() && stateField.getText().isEmpty()
-				&& zipCodeField.getText().isEmpty()) {
-			errorString = errorString + "\nAt least input something!";
 		}
-
-		if (!lNameField.getText().isEmpty()) {
-			errorString = errorString + "\nA First Name";
-		} else if (!fNameField.getText().isEmpty()) {
+		if (lNameField.getText().isEmpty()) {
 			errorString = errorString + "\nA Last Name";
 		}
+		if (fNameField.getText().isEmpty()) {
+			errorString = errorString + "\nA First Name";
+		}
+		if (stAddrField.getText().isEmpty()) {
+			errorString = errorString + "\nA Street Address";
+		}
+		if (cityField.getText().isEmpty()) {
+			errorString = errorString + "\nA City";
+		}
+		if (stateField.getText().isEmpty()) {
+			errorString = errorString + "\nA State";
+		}
+		if (zipCodeField.getText().isEmpty()) {
+			errorString = errorString + "\nA Zip Code";
+		}
 
-		if (!errorString.isEmpty()) {
+		if (errorString.equals(fullStringError)) {
+			error("\nEverything!");
+			return false;
+		} else if (!errorString.isEmpty()) {
 			error(errorString);
 			return false;
 		} else {
@@ -340,13 +353,8 @@ public class UpdateMemberController {
 				System.out.println("Clicked Yes to update Member.");
 				String doesNotExist;
 
-				int zipCode = 0;
-				if (!zipCodeField.getText().isEmpty())
-					zipCode = Integer.parseInt(zipCodeField.getText());
-
-				int memID = 0;
-				if (!memIDField.getText().isEmpty())
-					memID = Integer.parseInt(memIDField.getText());
+				int zipCode = Integer.parseInt(zipCodeField.getText());
+				int	memID = Integer.parseInt(memIDField.getText());
 
 				boolean suspend = isSuspended();
 				boolean active = isActive();

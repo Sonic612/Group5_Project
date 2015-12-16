@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<Pane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Graphics.Services.NewServiceController">
+   <children>
+      <Label layoutX="20.0" layoutY="21.0" text="Service Code: " />
+      <TextField fx:id="servCodeField" layoutX="111.0" layoutY="20.0" prefHeight="25.0" prefWidth="157.0" promptText="Enter Service Code" />
+      <Label layoutX="20.0" layoutY="52.0" text="Service Name: " />
+      <TextField fx:id="servNameField" layoutX="111.0" layoutY="51.0" prefHeight="25.0" prefWidth="157.0" promptText="Enter Service Name" />
+      <Label layoutX="20.0" layoutY="83.0" text="Service Fee: " />
+      <TextField fx:id="servFeeField" layoutX="110.0" layoutY="82.0" prefHeight="25.0" prefWidth="157.0" promptText="Enter Service Fee" />
+      <Button layoutX="158.0" layoutY="114.0" mnemonicParsing="false" onAction="#onSubmitClick" text="Submit" />
+      <Button cancelButton="true" layoutX="216.0" layoutY="114.0" mnemonicParsing="false" onAction="#onCancelClick" text="Cancel" />
+   </children>
+   <padding>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+   </padding>
+</Pane>

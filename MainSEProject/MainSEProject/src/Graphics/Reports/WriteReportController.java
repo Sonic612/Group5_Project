@@ -1,6 +1,7 @@
 package Graphics.Reports;
 
 import java.io.IOException;
+
 import Graphics.graphicsStart;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -15,6 +16,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
@@ -33,7 +35,7 @@ public class WriteReportController {
 	 * This is the list for the Member/Provider Combo Box.
 	 */
 	@FXML
-	ObservableList<String> reportTypeList = FXCollections.observableArrayList("Member", "Provider");
+	ObservableList<String> reportTypeList = FXCollections.observableArrayList("Member", "Provider", "Manager");
 
 	/**
 	 * This is the Combo Box for the active/suspended options.
@@ -46,6 +48,12 @@ public class WriteReportController {
 	 */
 	@FXML
 	private Button buttonYes;
+
+	@FXML
+	private Button buttonResetDates;
+
+	@FXML
+	private Button buttonReset;
 
 	/**
 	 * This is the title of the new report.
@@ -88,7 +96,6 @@ public class WriteReportController {
 	 */
 	@FXML
 	void initialize() {
-		typeChoiceBox.setValue("Select Type");
 		typeChoiceBox.setItems(reportTypeList);
 	}
 
@@ -166,7 +173,48 @@ public class WriteReportController {
 			provMemIDField.setVisible(true);
 			provMemIDField.setPromptText("Enter ID");
 			provMemIDField.setText(null);
+		} else {
+			memProvLabel.setVisible(false);
+			provMemIDField.setVisible(false);
+			provMemIDField.setText(null);
 		}
+	}
+
+	@FXML
+	void onStartDateClick(ActionEvent event) {
+		buttonResetDates.setVisible(true);
+	}
+
+	@FXML
+	void onEndDateClick(ActionEvent event) {
+		buttonResetDates.setVisible(true);
+	}
+
+	@FXML
+	void onResetDateClick(ActionEvent event) {
+		startDateSelectField.setValue(null);
+		endDateSelectField.setValue(null);
+		buttonResetDates.setVisible(false);
+	}
+
+	@FXML
+	void onResetClick(ActionEvent event) {
+		Pane paneArea = new Pane();
+
+		try {
+			paneArea = (Pane) FXMLLoader
+					.load(graphicsStart.class.getResource("gui/Reports/WriteReportController.fxml"));
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		Stage s = new Stage();
+		s.setScene(new Scene(paneArea));
+		s.setTitle("Write Report");
+		s.show();
+
+		Node source = (Node) event.getSource();
+		Stage stage = (Stage) source.getScene().getWindow();
+		stage.close();
 	}
 
 	/**
@@ -188,10 +236,10 @@ public class WriteReportController {
 		}
 		if (typeChoiceBox.getValue().equals("Select Type")) {
 			errorString = errorString + "\nSelect type of Report";
-		}else if (provMemIDField.getText() == null) {
-			if (typeChoiceBox.getValue().equals("Provider")) {
+		} else if (provMemIDField.getText() == null) {
+			if (typeChoiceBox.getValue().equals("Provider"))
 				errorString = errorString + "\nA Provider ID";
-			} else
+			else if (typeChoiceBox.getValue().equals("Member"))
 				errorString = errorString + "\nA Member ID";
 		}
 		if (startDateSelectField.getValue() == null) {
@@ -222,14 +270,73 @@ public class WriteReportController {
 		button.setOnAction(new EventHandler() {
 
 			@Override
-			public void handle(Event arg0) {
-				// DCOperator op = ChocAn.getOperator();
-				System.out.println("This worked!_1");
-				// *ACTIVATE*op.addReport(new Report(reportTitleField.getText(),
-				// userIDField.getText(), dateSelectField.getValue().toString(),
-				// reportArea.getText());
+			public void handle(Event event) {
+				String doesNotExist = "";
+				if (doesNotExist.equals("")) {
+					
+					Pane messagePane = null;
+					try {
+						messagePane = (Pane) FXMLLoader
+								.load(graphicsStart.class.getResource("gui/Messages/ReportMessageMenu.fxml"));
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+					ScrollPane scrollPane;
+					Label label;
+					
+					scrollPane = (ScrollPane) messagePane.getChildren().get(1);
+					label = (Label) scrollPane.getContent();
+					setMessageLabel(label, doesNotExist);
+
+					Stage s = new Stage();
+					s.setScene(new Scene(messagePane));
+					s.setTitle("Report");
+					s.show();
+
+					Node source = (Node) event.getSource();
+					Stage stage = (Stage) source.getScene().getWindow();
+					stage.close();
+				} else{
+					Pane messagePane = null;
+					try {
+						messagePane = (Pane) FXMLLoader
+								.load(graphicsStart.class.getResource("gui/Messages/ErrorMessageMenu.fxml"));
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+					Label label;
+
+					label = (Label) messagePane.getChildren().get(1);
+					setMessageLabel(label, doesNotExist);
+
+					Stage s = new Stage();
+					s.setScene(new Scene(messagePane));
+					s.setTitle("Error!");
+					s.show();
+
+					Node source = (Node) event.getSource();
+					Stage stage = (Stage) source.getScene().getWindow();
+					stage.close();
+				}
+
 			}
 
+			/**
+			 * This sets up a success/failure message label in an error message
+			 * menu.
+			 * 
+			 * @param label
+			 * @param doesNotExist
+			 */
+			@FXML
+			void setMessageLabel(Label label, String doesNotExist) {
+				if (doesNotExist.equals("")) {
+					label.setText("Error: No Member Record Found!");
+				} else {
+					//System.out.println(doesNotExist);
+					label.setText(doesNotExist);
+				}
+			}
 		});
 	}
 

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<Pane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Graphics.Services.ServiceOptionsMenuController">
+   <children>
+      <Label layoutX="149.0" layoutY="24.0" text="Service Options:">
+         <font>
+            <Font name="System Bold Italic" size="12.0" />
+         </font>
+      </Label>
+      <Button layoutX="27.0" layoutY="62.0" mnemonicParsing="false" onAction="#onNewServClick" prefHeight="52.0" prefWidth="102.0" text="Add Service" wrapText="true" />
+      <Button layoutX="143.0" layoutY="62.0" mnemonicParsing="false" onAction="#onDelServClick" prefHeight="52.0" prefWidth="102.0" text="Delete Service" wrapText="true" />
+      <Button layoutX="262.0" layoutY="62.0" mnemonicParsing="false" onAction="#onUpdServClick" prefHeight="52.0" prefWidth="102.0" text="Update Service" wrapText="true" />
+      <Button cancelButton="true" layoutX="133.0" layoutY="131.0" mnemonicParsing="false" onAction="#onBTMenuClick" text="Back to Main Menu" />
+   </children>
+   <padding>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+   </padding>
+</Pane>

@@ -86,10 +86,10 @@ public class SPRecordProcess implements RecordProcess{
 			Stmt1.setInt(3, servcode);
 			Stmt1.setTimestamp(4, new java.sql.Timestamp(calendar.getTime().getTime()));
 			Stmt1.setDate(5, java.sql.Date.valueOf(date));
-			Stmt1.executeQuery();
+			Stmt1.execute();
 		} catch (SQLException e) {
 			if(e.getMessage().equals("The statement did not return a result set.")){
-				return "No Result Set!";
+				return "Record Already Exists!";
 			}
 			System.out.println(e.getErrorCode()+ " " + e.getMessage());
 		}

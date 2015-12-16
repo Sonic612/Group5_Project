@@ -239,16 +239,33 @@ public class UpdateProviderController {
 	 */
 	@FXML
 	boolean checkEmptyErrors() {
-		String errorString = null;
+		String fullStringError = "\nA Provider ID" + "\nA Provider Name" + "\nA Street Address" + "\nA City"
+				+ "\nA State" + "\nA Zip Code";
+		String errorString = "";
 
 		if (provIDField.getText().isEmpty()) {
 			errorString = errorString + "\nA Provider ID";
-		} else if (provNameField.getText().isEmpty() && stAddrField.getText().isEmpty() && cityField.getText().isEmpty()
-				&& stateField.getText().isEmpty() && zipCodeField.getText().isEmpty()) {
-			errorString = errorString + "\nAt least input something!";
+		}
+		if (provNameField.getText().isEmpty()) {
+			errorString = errorString + "\nA Provider Name";
+		}
+		if (stAddrField.getText().isEmpty()) {
+			errorString = errorString + "\nA Street Address";
+		}
+		if (cityField.getText().isEmpty()) {
+			errorString = errorString + "\nA City";
+		}
+		if (stateField.getText().isEmpty()) {
+			errorString = errorString + "\nA State";
+		}
+		if (zipCodeField.getText().isEmpty()) {
+			errorString = errorString + "\nA Zip Code";
 		}
 
-		if (!errorString.isEmpty()) {
+		if (errorString.equals(fullStringError)) {
+			error("\nEverything!");
+			return false;
+		} else if (!errorString.isEmpty()) {
 			error(errorString);
 			return false;
 		} else {

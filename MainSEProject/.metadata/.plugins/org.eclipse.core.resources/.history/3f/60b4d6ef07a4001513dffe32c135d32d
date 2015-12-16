@@ -1,0 +1,188 @@
+package Graphics.Services;
+
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.ParsePosition;
+
+import Graphics.graphicsStart;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
+
+public class SPRecordController {
+	
+	/**
+	 * This is the Decimal Formatter for the initialization process.
+	 */
+	@FXML
+	DecimalFormat format = new DecimalFormat("#");
+
+	/**
+	 * This is the yes button in the AreYouSureMenu.
+	 */
+	@FXML
+	private Button buttonYes;
+	
+	@FXML
+	private Button buttonDateReset;
+
+	@FXML
+	private TextField provIDField;
+
+	@FXML
+	private TextField memIDField;
+
+	@FXML
+	private TextField servCodeField;
+
+	@FXML
+	private DatePicker encounterDatePickerField;
+	
+	@FXML
+	void initialize() {
+		provIDField.setTextFormatter(new TextFormatter<>(c -> {
+			if (c.getControlNewText().isEmpty()) {
+				return c;
+			}
+
+			ParsePosition parsePosition = new ParsePosition(0);
+			Object object = format.parse(c.getControlNewText(), parsePosition);
+
+			if (object == null || parsePosition.getIndex() < c.getControlNewText().length()) {
+				return null;
+			} else if (c.getControlNewText().length() > 4) {
+				return null;
+			} else {
+				return c;
+			}
+		}));
+		memIDField.setTextFormatter(new TextFormatter<>(c -> {
+			if (c.getControlNewText().isEmpty()) {
+				return c;
+			}
+
+			ParsePosition parsePosition = new ParsePosition(0);
+			Object object = format.parse(c.getControlNewText(), parsePosition);
+
+			if (object == null || parsePosition.getIndex() < c.getControlNewText().length()) {
+				return null;
+			} else if (c.getControlNewText().length() > 4) {
+				return null;
+			} else {
+				return c;
+			}
+		}));
+		servCodeField.setTextFormatter(new TextFormatter<>(c -> {
+			if (c.getControlNewText().isEmpty()) {
+				return c;
+			}
+
+			ParsePosition parsePosition = new ParsePosition(0);
+			Object object = format.parse(c.getControlNewText(), parsePosition);
+
+			if (object == null || parsePosition.getIndex() < c.getControlNewText().length()) {
+				return null;
+			} else if (c.getControlNewText().length() > 3) {
+				return null;
+			} else {
+				return c;
+			}
+		}));
+	}
+	
+	@FXML
+	void onRecordClick(ActionEvent event) {
+		if (checkEmptyErrors()) {
+
+			Pane paneArea = new Pane();
+			Label label;
+
+			try {
+				paneArea = (Pane) FXMLLoader.load(graphicsStart.class.getResource("gui/Messages/AreYouSureMenu.fxml"));
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+
+			label = (Label) paneArea.getChildren().get(2);
+			setLabel(label);
+			buttonYes = (Button) paneArea.getChildren().get(0);
+			onYesClick(buttonYes);
+
+			Stage s = new Stage();
+			s.setScene(new Scene(paneArea));
+			s.show();
+		}
+	}
+	
+
+	@FXML
+	boolean checkEmptyErrors() {
+		String fullStringError = "\nA Provider ID" + "\nA Member ID" + "\nA Service Code" + "\nAn Encounter Date";
+		String errorString = "";
+		
+		if (provIDField.getText().isEmpty()) {
+			errorString = errorString + "\nA Provider ID";
+		}
+		if (memIDField.getText().isEmpty()) {
+			errorString = errorString + "\nA Member ID";
+		}
+		if (servCodeField.getText().isEmpty()) {
+			errorString = errorString + "\nA Service Code";
+		}
+		if (encounterDatePickerField.getValue() == null) {
+			errorString = errorString + "\nAn Encounter Date";
+		}
+
+		if (errorString.equals(fullStringError)) {
+			error("\nEverything!");
+			return false;
+		} else if (!errorString.isEmpty()) {
+			error(errorString);
+			return false;
+		}
+
+		else
+			return true;
+	}
+
+
+	@FXML
+	void onDateResetClick(ActionEvent event) {
+		encounterDatePickerField.setValue(null);
+		buttonDateReset.setVisible(false);
+	}
+
+	@FXML
+	void onEncounterDateClick(ActionEvent event) {
+		buttonDateReset.setVisible(true);
+	}
+	
+	@FXML
+	void onCancelClick(ActionEvent event) {
+		Stage s = new Stage();
+
+		Pane mainpane = null;
+		try {
+			mainpane = (Pane) FXMLLoader.load(graphicsStart.class.getResource("gui/Main/MainMenu.fxml"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		s.setScene(new Scene(mainpane));
+		s.setTitle("Main Menu");
+		s.show();
+
+		Node source = (Node) event.getSource();
+		Stage stage = (Stage) source.getScene().getWindow();
+		stage.close();
+	}
+
+}

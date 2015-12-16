@@ -23,7 +23,7 @@ public class ServiceRecordProcess implements RecordProcess{
 	
 	final String WRITE_STMT = "INSERT INTO dbo.tbl_Services(serv_code,serv_name,SERV_fee) VALUES(?,?,?);";
 	final String UPDATE_STMT = "UPDATE dbo.tbl_Services "
-	+ "\nSET serv_code_ID = ?,serv_name = ?,SERV_fee = ?"
+	+ "\nSET serv_code = ?,serv_name = ?,SERV_fee = ?"
 	+ "\nWHERE serv_code = ?;";
 	final String DEL_STMT = "DELETE FROM dbo.tbl_Services WHERE serv_code = ?;";
 
@@ -87,8 +87,8 @@ public class ServiceRecordProcess implements RecordProcess{
 		try {
 			Stmt1.setInt(1, serv.getServCode());
 			Stmt1.setString(2, serv.getServName());
-			Stmt1.setFloat(3, serv.getServFee());
-			Stmt1.executeQuery();
+			Stmt1.setDouble(3, serv.getServFee());
+			Stmt1.execute();
 		} catch (SQLException e) {
 			if(e.getMessage().equals("The statement did not return a result set.")){
 				return "No Result Set!";
@@ -106,9 +106,9 @@ public class ServiceRecordProcess implements RecordProcess{
 		try {
 			Stmt2.setInt(1, serv.getServCode());
 			Stmt2.setString(2, serv.getServName());
-			Stmt2.setFloat(3, (float) serv.getServFee());
+			Stmt2.setDouble(3, serv.getServFee());
 			Stmt2.setInt(4, serv.getServCode());
-			Stmt2.executeQuery();
+			Stmt2.execute();
 		} catch (SQLException e) {
 			if(e.getMessage().equals("The statement did not return a result set.")){
 				return "No Result Set!";
@@ -127,7 +127,7 @@ public class ServiceRecordProcess implements RecordProcess{
 	public String deleteRecord(int servCode){
 		try {
 			Stmt3.setInt(1, servCode);
-			Stmt2.executeQuery();
+			Stmt3.execute();
 		} catch (SQLException e) {
 			if(e.getMessage().equals("The statement did not return a result set.")){
 				return "No Result Set!";

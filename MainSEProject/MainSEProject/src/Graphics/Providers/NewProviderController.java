@@ -246,7 +246,7 @@ public class NewProviderController {
 		String errorString = "";
 
 		if (provIDField.getText().isEmpty()) {
-			errorString = errorString + "\nA Member ID";
+			errorString = errorString + "\nA Provider ID";
 		}
 		if (provNameField.getText().isEmpty()) {
 			errorString = errorString + "\nA Provider Name";
