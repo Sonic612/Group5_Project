@@ -34,7 +34,7 @@ import javafx.stage.Stage;
  * @author sfyock
  */
 /**
- * @author seanp_000
+ * @author sfyock
  *
  */
 public class WriteReportController {
@@ -345,6 +345,9 @@ public class WriteReportController {
 				+ provMemIDField.getText());
 	}
 	
+	/**
+	 * @param l
+	 */
 	@FXML
 	void setErrorLabel(Label l) {
 		l.setText(l.getText() + "Your selected date must be before or equal to today.");
@@ -359,6 +362,9 @@ public class WriteReportController {
 		l.setText(l.getText() + "To show the report you must have:" + str);
 	}
 	
+	/**
+	 * 
+	 */
 	@FXML
 	void error() {
 		// Error Menu setup
@@ -381,6 +387,9 @@ public class WriteReportController {
 		s.show();
 	}
 
+	/**
+	 * @param str
+	 */
 	@FXML
 	void error(String str) {
 		// Error Menu setup

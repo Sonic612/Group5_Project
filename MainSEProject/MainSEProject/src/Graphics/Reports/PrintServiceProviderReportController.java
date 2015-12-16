@@ -43,18 +43,33 @@ public class PrintServiceProviderReportController {
 	@FXML
 	private Button buttonYes;
 	
+	/**
+	 * 
+	 */
 	@FXML
 	private TextField provIDField;
 
+	/**
+	 * 
+	 */
 	@FXML
 	private DatePicker startDatePickerField;
 
+	/**
+	 * 
+	 */
 	@FXML
 	private DatePicker endDatePickerField;
 
+	/**
+	 * 
+	 */
 	@FXML
 	private Button buttonDateReset;
 
+	/**
+	 * 
+	 */
 	@FXML
 	void initialize() {
 		provIDField.setTextFormatter(new TextFormatter<>(c -> {
@@ -339,6 +354,9 @@ public class PrintServiceProviderReportController {
 		s.show();
 	}
 
+	/**
+	 * @param str
+	 */
 	@FXML
 	void error(String str) {
 		// Error Menu setup

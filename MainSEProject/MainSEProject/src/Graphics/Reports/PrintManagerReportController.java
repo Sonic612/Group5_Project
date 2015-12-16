@@ -104,6 +104,9 @@ public class PrintManagerReportController {
 		stage.close();
 	}
 
+	/**
+	 * @return
+	 */
 	@FXML
 	boolean checkEmptyErrors() {
 		String fullStringError = "\nA Start Date" + "\nAn End Date";
@@ -134,6 +137,9 @@ public class PrintManagerReportController {
 			return true;
 	}
 
+	/**
+	 * @param event
+	 */
 	@FXML
 	void onDateResetClick(ActionEvent event) {
 		startDatePickerField.setValue(null);
@@ -141,11 +147,17 @@ public class PrintManagerReportController {
 		buttonDateReset.setVisible(false);
 	}
 
+	/**
+	 * @param event
+	 */
 	@FXML
 	void onEndDateClick(ActionEvent event) {
 		buttonDateReset.setVisible(true);
 	}
 
+	/**
+	 * @param event
+	 */
 	@FXML
 	void onStartDateClick(ActionEvent event) {
 		buttonDateReset.setVisible(true);
@@ -254,16 +266,26 @@ public class PrintManagerReportController {
 				+ endDatePickerField.getValue().toString());
 	}
 
+	/**
+	 * @param l
+	 */
 	@FXML
 	void setErrorLabel(Label l) {
 		l.setText(l.getText() + "Your end date must be greater than your start date.");
 	}
 
+	/**
+	 * @param l
+	 * @param str
+	 */
 	@FXML
 	void setErrorLabel(Label l, String str) {
 		l.setText(l.getText() + "To print your manager report you need: " + str);
 	}
 
+	/**
+	 * 
+	 */
 	@FXML
 	void error() {
 		// Error Menu setup
@@ -286,6 +308,9 @@ public class PrintManagerReportController {
 		s.show();
 	}
 
+	/**
+	 * @param str
+	 */
 	@FXML
 	void error(String str) {
 		// Error Menu setup

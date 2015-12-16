@@ -11,8 +11,14 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+/**
+ * This is the Service Options Menu Controller for the ServiceOptionsMenu.fxml.
+ * 
+ * @author sfyock
+ *
+ */
 public class ServiceOptionsMenuController {
-	
+
 	/**
 	 * The action event when you click the New Service Provider button.
 	 * 
@@ -36,7 +42,7 @@ public class ServiceOptionsMenuController {
 		Stage stage = (Stage) source.getScene().getWindow();
 		stage.close();
 	}
-	
+
 	/**
 	 * The action event when you click the Delete Service Provider button.
 	 * 
@@ -60,7 +66,7 @@ public class ServiceOptionsMenuController {
 		Stage stage = (Stage) source.getScene().getWindow();
 		stage.close();
 	}
-	
+
 	/**
 	 * The action event when you click the Update Service Provider button.
 	 * 
@@ -84,7 +90,7 @@ public class ServiceOptionsMenuController {
 		Stage stage = (Stage) source.getScene().getWindow();
 		stage.close();
 	}
-	
+
 	/**
 	 * The action event when you click the Back To Menu button.
 	 * 

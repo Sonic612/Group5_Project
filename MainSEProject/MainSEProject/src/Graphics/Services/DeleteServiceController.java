@@ -22,6 +22,12 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+/**
+ * This is the Delete Service Controller for the DeleteServiceMenu.fxml.
+ * 
+ * @author sfyock
+ *
+ */
 public class DeleteServiceController {
 
 	/**
@@ -36,6 +42,9 @@ public class DeleteServiceController {
 	@FXML
 	private Button buttonYes;
 
+	/**
+	 * 
+	 */
 	@FXML
 	private TextField servCodeField;
 
@@ -62,6 +71,9 @@ public class DeleteServiceController {
 		}));
 	}
 
+	/**
+	 * @param event
+	 */
 	@FXML
 	void onDeleteClick(ActionEvent event) {
 		if (!servCodeField.getText().isEmpty()) {
@@ -87,6 +99,9 @@ public class DeleteServiceController {
 			error();
 	}
 
+	/**
+	 * @param event
+	 */
 	@FXML
 	void onCancelClick(ActionEvent event) {
 		Stage s = new Stage();

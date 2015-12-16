@@ -23,6 +23,12 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+/**
+ * This is the Update Service Controller for the UpdateServiceMenu.fxml.
+ * 
+ * @author sfyock
+ *
+ */
 public class UpdateServiceController {
 
 	/**
@@ -43,12 +49,21 @@ public class UpdateServiceController {
 	@FXML
 	private Button buttonYes;
 
+	/**
+	 * 
+	 */
 	@FXML
 	private TextField servCodeField;
 
+	/**
+	 * 
+	 */
 	@FXML
 	private TextField servNameField;
 
+	/**
+	 * 
+	 */
 	@FXML
 	private TextField servFeeField;
 
@@ -90,6 +105,9 @@ public class UpdateServiceController {
 		}));
 	}
 
+	/**
+	 * @param event
+	 */
 	@FXML
 	void onUpdateClick(ActionEvent event) {
 		if (checkEmptyErrors()) {
@@ -114,6 +132,9 @@ public class UpdateServiceController {
 		}
 	}
 
+	/**
+	 * @param event
+	 */
 	@FXML
 	void onCancelClick(ActionEvent event) {
 		Stage s = new Stage();

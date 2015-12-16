@@ -24,6 +24,13 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+/**
+ * This is the Service Provider Record Controller for the
+ * ServiceProviderRecordMenu.fxml.
+ * 
+ * @author sfyock
+ *
+ */
 public class SPRecordController {
 
 	/**
@@ -38,27 +45,51 @@ public class SPRecordController {
 	@FXML
 	private Button buttonYes;
 
+	/**
+	 * 
+	 */
 	@FXML
 	private Button buttonDateReset;
 
+	/**
+	 * 
+	 */
 	@FXML
 	private TextField provIDField;
 
+	/**
+	 * 
+	 */
 	@FXML
 	private TextField memIDField;
 
+	/**
+	 * 
+	 */
 	@FXML
 	private TextField servCodeField;
 
+	/**
+	 * 
+	 */
 	@FXML
 	private DatePicker encounterDatePickerField;
 
+	/**
+	 * 
+	 */
 	@FXML
 	private Button buttonOk;
 
+	/**
+	 * 
+	 */
 	@FXML
 	private Label servInfoLabel;
 
+	/**
+	 * 
+	 */
 	@FXML
 	void initialize() {
 		provIDField.setTextFormatter(new TextFormatter<>(c -> {
@@ -111,6 +142,9 @@ public class SPRecordController {
 		}));
 	}
 
+	/**
+	 * @param event
+	 */
 	@FXML
 	void onRecordClick(ActionEvent event) {
 		if (checkEmptyErrors()) {
@@ -135,6 +169,9 @@ public class SPRecordController {
 		}
 	}
 
+	/**
+	 * @param event
+	 */
 	@FXML
 	void onCancelClick(ActionEvent event) {
 		Stage s = new Stage();
@@ -154,6 +191,9 @@ public class SPRecordController {
 		stage.close();
 	}
 
+	/**
+	 * @return
+	 */
 	@FXML
 	boolean checkEmptyErrors() {
 		String fullStringError = "\nA Provider ID" + "\nA Member ID" + "\nA Service Code" + "\nAn Encounter Date";
@@ -190,6 +230,9 @@ public class SPRecordController {
 			return true;
 	}
 
+	/**
+	 * @param event
+	 */
 	@FXML
 	void onOkClick(ActionEvent event) {
 
@@ -199,9 +242,9 @@ public class SPRecordController {
 			int servCode = Integer.parseInt(servCodeField.getText());
 			String servName = record.getServName(servCode);
 			String servFee = record.getServFee(servCode);
-			if(servName != "" && servFee != "")
+			if (servName != "" && servFee != "")
 				servInfoLabel.setText("Service Name: " + servName + "\nService Fee: " + servFee);
-			else{
+			else {
 				servInfoLabel.setText("There is no service code input.");
 			}
 
@@ -211,12 +254,18 @@ public class SPRecordController {
 		}
 	}
 
+	/**
+	 * @param event
+	 */
 	@FXML
 	void onDateResetClick(ActionEvent event) {
 		encounterDatePickerField.setValue(null);
 		buttonDateReset.setVisible(false);
 	}
 
+	/**
+	 * @param event
+	 */
 	@FXML
 	void onEncounterDateClick(ActionEvent event) {
 		buttonDateReset.setVisible(true);
@@ -299,16 +348,26 @@ public class SPRecordController {
 				+ encounterDatePickerField.getValue().toString());
 	}
 
+	/**
+	 * @param l
+	 */
 	@FXML
 	void setErrorLabel(Label l) {
 		l.setText(l.getText() + "Your encounter date must be before today.");
 	}
 
+	/**
+	 * @param l
+	 * @param str
+	 */
 	@FXML
 	void setErrorLabel(Label l, String str) {
 		l.setText(l.getText() + "To record the encounter report you need: " + str);
 	}
 
+	/**
+	 * 
+	 */
 	@FXML
 	void error() {
 		// Error Menu setup
@@ -331,6 +390,9 @@ public class SPRecordController {
 		s.show();
 	}
 
+	/**
+	 * @param str
+	 */
 	@FXML
 	void error(String str) {
 		// Error Menu setup
