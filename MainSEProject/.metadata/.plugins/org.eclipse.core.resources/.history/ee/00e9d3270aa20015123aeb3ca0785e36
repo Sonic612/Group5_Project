@@ -1,0 +1,30 @@
+package Main;
+import Graphics.graphicsStart;
+
+/**
+ * The is the ChocAn Main Class. This simply will be the connector
+ * for the GUI.
+ * 
+ *  @author sfyock
+ */
+public class ChocAn{
+	
+	static DCOperator operator;
+	static ReportViewer reports;
+	
+	/**
+	 * starts by creating the gui, then connecting to the database? or the other way around.
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		operator = new DCOperator("group5", "!Tech!612");
+		reports = new ReportViewer("group5", "!Tech!612");
+		graphicsStart.main(args);
+
+	}
+	
+	public static DCOperator getDCOperator(){
+		return operator;
+	}
+	
+}

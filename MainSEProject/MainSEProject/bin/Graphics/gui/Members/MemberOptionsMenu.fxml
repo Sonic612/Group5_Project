@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<Pane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Graphics.Members.MemberMenuController">
+   <children>
+      <Label layoutX="160.0" layoutY="14.0" text="Member Options:">
+         <font>
+            <Font name="System Bold Italic" size="12.0" />
+         </font>
+      </Label>
+      <Button layoutX="20.0" layoutY="59.0" mnemonicParsing="false" onAction="#onNewMemClick" prefHeight="52.0" prefWidth="118.0" text="Add New Member" />
+      <Button layoutX="153.0" layoutY="59.0" mnemonicParsing="false" onAction="#onDelMemClick" prefHeight="52.0" prefWidth="118.0" text="Delete Memeber" />
+      <Button layoutX="291.0" layoutY="59.0" mnemonicParsing="false" onAction="#onUpdMemClick" prefHeight="52.0" prefWidth="118.0" text="Update Member" />
+      <Button cancelButton="true" layoutX="153.0" layoutY="130.0" mnemonicParsing="false" onAction="#onBTMenuClick" text="Back to Main Menu" />
+   </children>
+   <padding>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+   </padding>
+</Pane>

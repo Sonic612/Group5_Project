@@ -1,0 +1,153 @@
+package Graphics.Main;
+
+import java.io.IOException;
+
+import Graphics.graphicsStart;
+import Main.ChocAn;
+import Main.DCOperator;
+import Main.ReportViewer;
+import Main.SPRecordProcess;
+import Main.SPReportProcess;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
+
+/**
+ * This is the login controller for MainLogin.fxml.
+ * 
+ * @author sfyock
+ */
+public class LoginController {
+
+	/**
+	 * The text field for the user name.
+	 */
+	@FXML
+	private TextField userField;
+
+	/**
+	 * The password field for the user's password.
+	 */
+	@FXML
+	private PasswordField passField;
+
+	/**
+	 * Looks for correct login credentials as true/false.
+	 */
+	@FXML
+	private boolean correctLogin() {
+
+		String error;
+		//String reportError;
+		if (userField.getText().isEmpty() && passField.getText().isEmpty()) {
+			error("username and password");
+			return false;
+		} else if (userField.getText().isEmpty()) {
+			error("username");
+			return false;
+		} else if (passField.getText().isEmpty()) {
+			error("password");
+			return false;
+		} else {
+			DCOperator operator = ChocAn.setOperator(new DCOperator(userField.getText(), passField.getText()));
+			ReportViewer reports = ChocAn.setReports(new ReportViewer(userField.getText(), passField.getText()));
+			SPRecordProcess sPRecord = ChocAn.setsPRecord(new SPRecordProcess(userField.getText(), passField.getText()));
+			SPReportProcess sPReport = ChocAn.setSPReport(new SPReportProcess(userField.getText(), passField.getText()));
+			ReportViewer services = ChocAn.setReports(new ReportViewer(userField.getText(), passField.getText()));
+			ReportViewer memReport = ChocAn.setReports(new ReportViewer(userField.getText(), passField.getText()));
+			ReportViewer mngReport = ChocAn.setReports(new ReportViewer(userField.getText(), passField.getText()));
+			//reportError = reports.getConnectionError();
+			error = operator.getConnectionError();
+		}
+
+		if (error == null) {
+			return true;
+		} else {
+			error("correct username and/or password");
+			return false;
+		}
+
+	}
+
+	/**
+	 * The action event for when the user clicks the login button.
+	 * 
+	 * @param event
+	 */
+	@FXML
+	void onLoginClick(ActionEvent event) {
+		if (correctLogin()) {
+
+			Pane mainpane = null;
+			try {
+				mainpane = (Pane) FXMLLoader.load(graphicsStart.class.getResource("gui/Main/MainMenu.fxml"));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			Stage main = new Stage();
+			main.setScene(new Scene(mainpane));
+			main.setTitle("Main Menu");
+			main.show();
+
+			Node source = (Node) event.getSource();
+			Stage stage = (Stage) source.getScene().getWindow();
+			stage.close();
+		}
+	}
+
+	/**
+	 * The action event for when the user clicks the quit button.
+	 * 
+	 * @param event
+	 */
+	@FXML
+	void onExitClick(ActionEvent event) {
+		System.exit(0);
+	}
+
+	/**
+	 * Sets up the error label in the error message.
+	 * 
+	 * @param l
+	 * @param str
+	 */
+	@FXML
+	void setErrorLabel(Label l, String str) {
+		l.setText("You did not input a " + str + ".");
+	}
+
+	/**
+	 * Build the error message and displays it.
+	 * 
+	 * @param str
+	 */
+	@FXML
+	void error(String str) {
+		// Error Menu setup
+		GridPane paneArea = new GridPane();
+		Label label;
+
+		try {
+			paneArea = (GridPane) FXMLLoader
+					.load(graphicsStart.class.getResource("gui/Messages/ErrorMessageMenu.fxml"));
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		label = (Label) paneArea.getChildren().get(1);
+		setErrorLabel(label, str);
+		Stage s = new Stage();
+		s.setScene(new Scene(paneArea));
+		s.setTitle("Error!");
+		s.show();
+	}
+
+}

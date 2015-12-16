@@ -1,0 +1,48 @@
+package Main;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+
+/**
+ * This is an interface for the SQL called Record Process. This records
+ * ...
+ * 
+ * @author sfyock
+ */
+public interface RecordProcess {
+	Connection dbConn = null;
+	String TARGET_SERVER = "jdbc:sqlserver://sonic613.database.windows.net:1433;";
+	String TARGET_DB = "ChocAn";;
+	String dbHost =  null;
+	String dbUser =  null;
+	String dbPass = null;
+	
+	/**
+	 * 
+	 */
+	public void termConn() {
+		try {
+			Stmt1.close();
+			Stmt2.close();
+			Stmt3.close();
+			Stmt4.close();
+			Stmt5.close();
+			resultProvSet.close();
+		    resultEnctrSet.close();
+		    resultFCount.close();
+		    resultFSum.close();
+			connection.close();
+			
+		} catch (SQLException e) {
+			System.out.println(e.getErrorCode()+ " " + e.getMessage());
+		}
+	}
+	
+	@Override
+	public void saveReport(int ID){
+		try{
+			Stmt5.setInt(1,ID)
+		}
+	}
+	
+}

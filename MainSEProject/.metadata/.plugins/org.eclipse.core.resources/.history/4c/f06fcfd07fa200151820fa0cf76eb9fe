@@ -1,0 +1,77 @@
+package Main;
+
+/**
+ * Creates a service object and defines setters and getters for interacting with it.
+ * 
+ * @author sgill
+ */
+public class Service {
+
+
+    private int servCode;
+    private String servName;
+    private double servFee;
+
+    /**
+     * Constructor method provides a invocation call [blueprint] for creating service object
+     * 
+     * @param inCode int variable for setting the servCode
+     * @param inName string variable for setting the servName
+     * @param inAmt double variable for setting the servFee
+     */
+    public Service(int inCode,String inName, Double inAmt){
+          this.servCode = inCode;
+          this.servName = inName;
+          this.servFee = inAmt;
+  	}
+    
+   
+    /**
+     * Sets the servCode field of the object.
+     * @param inCode int variable to be assigned to servCode field
+     */
+    public void setServCode(int inCode){
+          this.servCode = inCode;
+   	}
+
+    /**
+     * return the servCode field set for that service object
+     * @return int servCode variable
+     */
+    public int getServCode(){
+          return this.servCode;
+    }
+
+    /**
+     * Sets the servName field of the object.
+     * @param inName String variable to be assigned to servName field
+     */
+    public void setServName(String inName){
+          this.servName = inName;
+    }
+    
+    
+	 /**
+	 * return the servName field set that service object
+	 * @return String servName variable
+	 */
+	public String getServName(){
+          return this.servName;
+     }
+
+    /**
+     * Sets the servFee field of the object
+     * @param inAmt double variable to be assigned to servFee field.
+     */
+    public void setServFee(double inAmt){
+          this.servFee = inAmt;
+     }
+
+    /**
+     * return the servFee field set that service object
+     * @return double servFee variable
+     */
+    public double getServFee(){
+      	return this.servFee;
+  	}
+}

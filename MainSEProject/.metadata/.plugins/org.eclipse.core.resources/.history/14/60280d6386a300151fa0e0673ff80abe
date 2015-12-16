@@ -1,0 +1,44 @@
+package Graphics.Services;
+
+import java.io.IOException;
+
+import Graphics.graphicsStart;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
+
+public class DeleteServiceProviderController {
+
+    @FXML
+    private TextField servCodeField;
+
+    @FXML
+    void onDeleteClick(ActionEvent event) {
+
+    }
+
+    @FXML
+    void onCancelClick(ActionEvent event) {
+    	Stage s = new Stage();
+
+		Pane mainpane = null;
+		try {
+			mainpane = (Pane) FXMLLoader.load(graphicsStart.class.getResource("gui/Services/ServiceProviderOptionsMenu.fxml"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		s.setScene(new Scene(mainpane));
+		s.setTitle("SP Record");
+		s.show();
+
+		Node source = (Node) event.getSource();
+		Stage stage = (Stage) source.getScene().getWindow();
+		stage.close();
+    }
+
+}

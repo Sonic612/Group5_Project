@@ -1,0 +1,39 @@
+package Graphics;
+
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
+
+/**
+ * This is the start for the gui.
+ * @author sfyock
+ */
+public class graphicsStart extends Application{
+	
+	
+	/**
+	 * This is the pane which starts the gui.
+	 */
+	Pane mainpane;
+	
+	/**
+	 * This is the main method for graphicsStart.java
+	 * @param args
+	 */
+	public static void main(String[] args){
+		launch(args);
+	}
+
+	/* (non-Javadoc)
+	 * @see javafx.application.Application#start(javafx.stage.Stage)
+	 */
+	@Override
+	public void start(Stage main) throws Exception {
+		mainpane = (Pane) FXMLLoader.load(graphicsStart.class.getResource("gui/Main/MainLogin.fxml"));
+		main.setScene(new Scene(mainpane));
+		main.setTitle("Login");
+		main.show();
+	}
+}

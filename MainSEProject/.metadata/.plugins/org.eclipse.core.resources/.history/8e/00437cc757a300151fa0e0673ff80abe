@@ -1,0 +1,26 @@
+package Graphics.Services;
+
+
+public class ServiceProviderMenuController {
+
+    @FXML
+    void onNewSerProvClick(ActionEvent event) {
+
+    }
+
+    @FXML
+    void onDelSerProvClick(ActionEvent event) {
+
+    }
+
+    @FXML
+    void onUpdSerProvClick(ActionEvent event) {
+
+    }
+
+    @FXML
+    void onBTMenuClick(ActionEvent event) {
+
+    }
+
+}

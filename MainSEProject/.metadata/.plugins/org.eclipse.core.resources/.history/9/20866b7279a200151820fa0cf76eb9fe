@@ -1,0 +1,171 @@
+package Graphics.Providers;
+
+import java.io.IOException;
+
+import Graphics.graphicsStart;
+import Main.ChocAn;
+import Main.DCOperator;
+import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
+
+/**
+ * This is the delete provider controller for DeleteProviderMenu.fxml.
+ * 
+ * @author sfyock
+ */
+public class DeleteProviderController {
+
+	/**
+	 * This is the yes button in the AreYouSureMenu.
+	 */
+	@FXML
+	private Button buttonYes;
+
+	/**
+	 * This is the yes button in the AreYouSureMenu.
+	 */
+	@FXML
+	private TextField provIDField;
+
+	@FXML
+	void onDeleteClick(ActionEvent event) {
+		if (!provIDField.getText().isEmpty()) {
+			Pane paneArea = new Pane();
+			Label label;
+
+			try {
+				paneArea = (Pane) FXMLLoader.load(graphicsStart.class.getResource("gui/Messages/AreYouSureMenu.fxml"));
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+
+			label = (Label) paneArea.getChildren().get(2);
+			setLabel(label);
+			buttonYes = (Button) paneArea.getChildren().get(0);
+			onYesClick(buttonYes);
+
+			Stage s = new Stage();
+			s.setScene(new Scene(paneArea));
+			s.show();
+		} else
+			error();
+	}
+
+	@FXML
+	void onCancelClick(ActionEvent event) {
+		Pane paneArea = new Pane();
+
+		try {
+			paneArea = (Pane) FXMLLoader
+					.load(graphicsStart.class.getResource("gui/Providers/ProviderOptionsMenu.fxml"));
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		Stage s = new Stage();
+		s.setScene(new Scene(paneArea));
+		s.setTitle("Provider Options");
+		s.show();
+
+		Node source = (Node) event.getSource();
+		Stage stage = (Stage) source.getScene().getWindow();
+		stage.close();
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@FXML
+	void onYesClick(Button button) {
+		button.setOnAction(new EventHandler() {
+
+			@Override
+			public void handle(Event event) {
+				DCOperator op = ChocAn.getDCOperator();
+				String doesNotExist;
+				System.out.println("This worked!_5");
+				doesNotExist = op.delProvider(provIDField.getText());
+
+				Pane messagePane = null;
+				try {
+					messagePane = (Pane) FXMLLoader
+							.load(graphicsStart.class.getResource("gui/Messages/ErrorMessageMenu.fxml"));
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				Label label;
+
+				label = (Label) messagePane.getChildren().get(1);
+				setMessageLabel(label, doesNotExist);
+
+				Stage s = new Stage();
+				s.setScene(new Scene(messagePane));
+				s.show();
+
+				Node source = (Node) event.getSource();
+				Stage stage = (Stage) source.getScene().getWindow();
+				stage.setTitle("Message");
+				stage.close();
+			}
+
+			/**
+			 * This sets up a success/failure message label in an error message
+			 * menu.
+			 * 
+			 * @param label
+			 * @param doesNotExist
+			 */
+			@FXML
+			void setMessageLabel(Label label, String doesNotExist) {
+				label.setText(doesNotExist);
+			}
+
+		});
+	}
+
+	@FXML
+	void setLabel(Label l) {
+		l.setText(l.getText() + "\nProvider ID:\t" + provIDField.getText());
+	}
+
+	/**
+	 * This sets up the error message label in the error message menu.
+	 * 
+	 * @param l
+	 */
+	@FXML
+	void setErrorLabel(Label l) {
+		l.setText(l.getText() + "You are missing the ID of the provider you want to delete.");
+	}
+
+	/**
+	 * Sets up an error message using the ErrorMessageMenu.
+	 */
+	@FXML
+	void error() {
+		// Error Menu setup
+		GridPane paneArea = new GridPane();
+		Label label;
+
+		try {
+			paneArea = (GridPane) FXMLLoader
+					.load(graphicsStart.class.getResource("gui/Messages/ErrorMessageMenu.fxml"));
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		label = (Label) paneArea.getChildren().get(1);
+		setErrorLabel(label);
+		Stage s = new Stage();
+		s.setScene(new Scene(paneArea));
+		s.setTitle("Error...");
+		s.show();
+	}
+}

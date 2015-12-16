@@ -1,0 +1,28 @@
+package Graphics.Services;
+
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.TextField;
+
+public class UpdateServiceReportController {
+
+    @FXML
+    private TextField servCodeField;
+
+    @FXML
+    private TextField servNameField;
+
+    @FXML
+    private TextField servFeeField;
+
+    @FXML
+    void onUpdateClick(ActionEvent event) {
+
+    }
+
+    @FXML
+    void onCancelClick(ActionEvent event) {
+
+    }
+
+}

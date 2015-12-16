@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<Pane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Graphics.Reports.WriteReportController">
+   <children>
+      <TextArea fx:id="reportArea" layoutX="20.0" layoutY="46.0" prefHeight="175.0" prefWidth="439.0" />
+      <Label layoutX="20.0" layoutY="19.0" text="Report Title: " />
+      <Button layoutX="409.0" layoutY="300.0" mnemonicParsing="false" onAction="#onCancelClick" text="Cancel" />
+      <Button layoutX="304.0" layoutY="300.0" mnemonicParsing="false" onAction="#onSubmitReportClick" text="Submit Report" />
+      <DatePicker fx:id="startDateSelectField" layoutX="94.0" layoutY="265.0" prefHeight="25.0" prefWidth="138.0" promptText="StartDate" />
+      <Label layoutX="20.0" layoutY="269.0" text="Start Date: " />
+      <Label layoutX="20.0" layoutY="236.0" text="Report Type: " />
+      <TextField fx:id="reportTitleField" layoutX="94.0" layoutY="15.0" promptText="Enter Report Title" />
+      <Label fx:id="memProvLabel" layoutX="243.0" layoutY="236.0" text="Provider Username: " visible="false" />
+      <TextField fx:id="provMemIDField" layoutX="354.0" layoutY="232.0" prefHeight="25.0" prefWidth="107.0" visible="false" />
+      <ComboBox fx:id="typeChoiceBox" layoutX="94.0" layoutY="232.0" onAction="#onReportTypeChanged" prefHeight="25.0" prefWidth="138.0" />
+      <Label layoutX="20.0" layoutY="304.0" text="End Date: " />
+      <DatePicker fx:id="endDateSelectField" layoutX="94.0" layoutY="300.0" prefHeight="25.0" prefWidth="138.0" promptText="End Date" />
+   </children>
+   <padding>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+   </padding>
+</Pane>

@@ -1,0 +1,22 @@
+package Graphics.Services;
+
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.TextField;
+
+public class DeleteServiceProviderController {
+
+    @FXML
+    private TextField servCodeField;
+
+    @FXML
+    void onDeleteClick(ActionEvent event) {
+
+    }
+
+    @FXML
+    void onCancelClick(ActionEvent event) {
+
+    }
+
+}

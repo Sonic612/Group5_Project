@@ -1,0 +1,44 @@
+package Graphics.Reports;
+
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
+
+public class PrintManagerReportController {
+
+    @FXML
+    private DatePicker endDatePickerField;
+
+    @FXML
+    private DatePicker startDatePickerField;
+
+    @FXML
+    private Button buttonDateReset;
+
+    @FXML
+    void onReportPrintClick(ActionEvent event) {
+
+    }
+
+    @FXML
+    void onCancelClick(ActionEvent event) {
+
+    }
+
+    @FXML
+    void onDateResetClick(ActionEvent event) {
+
+    }
+
+    @FXML
+    void onEndDateClick(ActionEvent event) {
+
+    }
+
+    @FXML
+    void onStartDateClick(ActionEvent event) {
+
+    }
+
+}

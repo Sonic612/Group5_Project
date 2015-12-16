@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<Pane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Graphics.Reports.PrintMemberReportController">
+   <children>
+      <TextField fx:id="memIDField" layoutX="106.0" layoutY="20.0" promptText="Enter Member ID" />
+      <Button layoutX="120.0" layoutY="117.0" mnemonicParsing="false" onAction="#onReportPrintClick" text="Print Report" />
+      <Button layoutX="203.0" layoutY="117.0" mnemonicParsing="false" onAction="#onCancelClick" text="Cancel" />
+      <Label layoutX="20.0" layoutY="22.0" text="Member ID: " />
+      <Label layoutX="20.0" layoutY="53.0" text="Start Date: " />
+      <DatePicker fx:id="startDatePickerField" editable="false" layoutX="106.0" layoutY="51.0" onAction="#onStartDateClick" prefHeight="25.0" prefWidth="149.0" promptText="Select Start Date" />
+      <Button fx:id="buttonDateReset" layoutX="20.0" layoutY="115.0" mnemonicParsing="false" onAction="#onDateResetClick" text="Reset Date" visible="false" />
+      <DatePicker fx:id="endDatePickerField" editable="false" layoutX="106.0" layoutY="81.0" onAction="#onEndDateClick" prefHeight="25.0" prefWidth="149.0" promptText="Select End Date" />
+      <Label layoutX="20.0" layoutY="83.0" text="End Date: " />
+   </children>
+   <padding>
+      <Insets bottom="10.0" left="10.0" right="15.0" top="10.0" />
+   </padding>
+</Pane>

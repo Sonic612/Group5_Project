@@ -1,0 +1,171 @@
+package Graphics.Main;
+
+import java.io.IOException;
+
+import Graphics.graphicsStart;
+import Main.ChocAn;
+import Main.DCOperator;
+import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
+
+/**
+ * This the the controller for MainMenu.fxml.
+ * @author sfyock
+ */
+public class MainController {
+	 
+	/**The Welcome Label for the main menu.*/
+    @FXML
+    private Label welcomeLabel;
+    
+    /**This is to remember a previous source*/
+    @FXML
+    private Node prevSource;
+    /**This is to remember if a button was pressed*/
+    @FXML
+    private Boolean isPressed;
+    
+    /**The action when you click the member options button.
+     * @param event
+     */
+    @FXML
+    void onMemClick(ActionEvent event) {
+    	Stage s = new Stage();
+    	
+    	Pane mainpane = null;
+		try {
+			mainpane = (Pane) FXMLLoader.load(graphicsStart.class.getResource("gui/Members/MemberOptionsMenu.fxml"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    	s.setScene(new Scene(mainpane));
+    	s.setTitle("Member Options");
+    	s.show();
+    	
+    	Node  source = (Node)  event.getSource(); 
+        Stage stage  = (Stage) source.getScene().getWindow();
+        stage.close();
+    }
+    
+    /**
+     * 
+     */
+    /** The action when you click the provider options button.
+     *  @param event
+     */
+    @FXML
+    void onProvClick(ActionEvent event) {
+    	Stage s = new Stage();
+    	
+    	Pane mainpane = null;
+		try {
+			mainpane = (Pane) FXMLLoader.load(graphicsStart.class.getResource("gui/Providers/ProviderOptionsMenu.fxml"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    	s.setScene(new Scene(mainpane));
+    	s.setTitle("Provider Options");
+    	s.show();
+    	
+    	Node  source = (Node)  event.getSource(); 
+        Stage stage  = (Stage) source.getScene().getWindow();
+        stage.close();
+    }
+    
+    /**
+     * The action when you click the Report options button.
+     */
+    @FXML
+    void onRepClick(ActionEvent event) {
+    	Stage s = new Stage();
+    	
+    	Pane mainpane = null;
+		try {
+			mainpane = (Pane) FXMLLoader.load(graphicsStart.class.getResource("gui/Reports/ReportOptionsMenu.fxml"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    	s.setScene(new Scene(mainpane));
+    	s.setTitle("Report Options");
+    	s.show();
+    	
+    	Node  source = (Node)  event.getSource(); 
+        Stage stage  = (Stage) source.getScene().getWindow();
+        stage.close();
+    }
+    
+    @FXML
+    void setLabel(Label l){
+    	l.setText("Are you sure you wish to Log Out?");
+    }
+    
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	@FXML
+	void onYesClick(Button button){
+    	button.setOnAction(new EventHandler(){
+
+			@Override
+			public void handle(Event event) {
+				Stage mainStage = (Stage) prevSource.getScene().getWindow();
+				mainStage.close();
+				
+				Stage main = new Stage();
+				Pane mainpane = null;
+				try {
+					mainpane = (Pane) FXMLLoader.load(graphicsStart.class.getResource("gui/Main/MainLogin.fxml"));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				main.setScene(new Scene(mainpane));
+				main.setTitle("Login");
+				main.show();
+				
+				Node  source = (Node)  event.getSource(); 
+				Stage stage  = (Stage) source.getScene().getWindow();
+				stage.close();
+				
+			}
+			
+		});
+    	
+    }
+   
+    /**
+     * The action when you click the Quit button.
+     */
+    @FXML
+    void onLogOutClick(ActionEvent event) {
+    	
+    	Pane mainpane = null;
+		try {
+			mainpane = (Pane) FXMLLoader.load(graphicsStart.class.getResource("gui/Main/AreYouSureMenu.fxml"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		Label label;
+		Button buttonYes;
+		label = (Label) mainpane.getChildren().get(2);
+		setLabel(label);
+		buttonYes = (Button) mainpane.getChildren().get(0);
+		onYesClick(buttonYes);
+		prevSource = (Node)  event.getSource(); 
+		
+		Stage main = new Stage();
+		main.setScene(new Scene(mainpane));
+		main.setTitle("Main Menu");
+		main.show();
+
+		}
+		
+    }

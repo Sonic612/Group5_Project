@@ -1,0 +1,471 @@
+package Graphics.Members;
+
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.ParsePosition;
+
+import Graphics.graphicsStart;
+import Main.ChocAn;
+import Main.DCOperator;
+import Main.Member;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
+
+/**
+ * This is the delete member controller for DeleteMemberMenu.fxml.
+ * 
+ * @author sfyock
+ */
+public class UpdateMemberController {
+
+	/**
+	 * This is the list for the Active/Suspended Combo Box.
+	 */
+	@FXML
+	ObservableList<String> activeList = FXCollections.observableArrayList("Acitve", "Non-Active", "Suspended");
+
+	/**
+	 * This is the Combo Box for the active/suspended options.
+	 */
+	@FXML
+	private ComboBox<String> activeBox;
+
+	/**
+	 * This is the Decimal Formatter for the initialization process.
+	 */
+	@FXML
+	DecimalFormat format = new DecimalFormat("#");
+
+	/**
+	 * This is the yes button in the AreYouSureMenu.
+	 */
+	@FXML
+	private Button buttonYes;
+
+	/**
+	 * The is the reset button for the new member menu.
+	 */
+	@FXML
+	private Button buttonReset;
+
+	/**
+	 * This is a full name string for the updated member.
+	 */
+	@FXML
+	private String fullName;
+
+	/**
+	 * This is the text field for the member ID.
+	 */
+	@FXML
+	private TextField memIDField;
+
+	/**
+	 * This is the text field for the member last name.
+	 */
+	@FXML
+	private TextField lNameField;
+
+	/**
+	 * This is the text field for the member first name.
+	 */
+	@FXML
+	private TextField fNameField;
+
+	/**
+	 * This is the text field for the street address.
+	 */
+	@FXML
+	private TextField stAddrField;
+
+	/**
+	 * This is the text field for the city.
+	 */
+	@FXML
+	private TextField cityField;
+
+	/**
+	 * This is the text field for the state.
+	 */
+	@FXML
+	private TextField stateField;
+
+	/**
+	 * This is the text field for the zip code.
+	 */
+	@FXML
+	private TextField zipCodeField;
+
+	/**
+	 * The initialization of this controller. Sets up the combo box and formats
+	 * for text fields.
+	 */
+	@FXML
+	void initialize() {
+		activeBox.setValue(activeList.get(0));
+		activeBox.setItems(activeList);
+
+		memIDField.setTextFormatter(new TextFormatter<>(c -> {
+			if (c.getControlNewText().isEmpty()) {
+				return c;
+			}
+
+			ParsePosition parsePosition = new ParsePosition(0);
+			Object object = format.parse(c.getControlNewText(), parsePosition);
+
+			if (object == null || parsePosition.getIndex() < c.getControlNewText().length()) {
+				return null;
+			} else if (c.getControlNewText().length() > 4) {
+				return null;
+			} else {
+				return c;
+			}
+		}));
+		zipCodeField.setTextFormatter(new TextFormatter<>(c -> {
+			if (c.getControlNewText().isEmpty()) {
+				return c;
+			}
+
+			ParsePosition parsePosition = new ParsePosition(0);
+			Object object = format.parse(c.getControlNewText(), parsePosition);
+
+			if (object == null || parsePosition.getIndex() < c.getControlNewText().length()) {
+				return null;
+			} else if (c.getControlNewText().length() > 5) {
+				return null;
+			} else {
+				return c;
+			}
+		}));
+		stateField.setTextFormatter(new TextFormatter<>(c -> {
+			if (c.getControlNewText().isEmpty()) {
+				return c;
+			}
+
+			if (c.getControlNewText().length() > 2) {
+				return null;
+			} else if (!isAllUpper(c.getControlNewText())) {
+				c.setText(c.getText().toUpperCase());
+				return c;
+			} else {
+				return c;
+			}
+		}));
+	}
+
+	/**
+	 * Checks to see if string is upper or lower case.
+	 * 
+	 * @param s
+	 * @return
+	 */
+	@FXML
+	boolean isAllUpper(String s) {
+		for (char c : s.toCharArray()) {
+			if (Character.isLetter(c) && Character.isLowerCase(c)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * The action event when the user clicks the update button.
+	 * 
+	 * @param event
+	 */
+	@FXML
+	void onUpdateClick(ActionEvent event) {
+		if (checkEmptyErrors()) {
+
+			buttonReset.setVisible(true);
+			int zipCode = Integer.parseInt(zipCodeField.getText());
+			int memID = Integer.parseInt(memIDField.getText());
+
+			boolean suspend = isSuspended();
+			boolean active = isActive();
+
+			Pane paneArea = new Pane();
+			Label label;
+
+			try {
+				paneArea = (Pane) FXMLLoader.load(graphicsStart.class.getResource("gui/Messages/AreYouSureMenu.fxml"));
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+
+			label = (Label) paneArea.getChildren().get(2);
+			setLabel(label);
+			buttonYes = (Button) paneArea.getChildren().get(0);
+			onYesClick(buttonYes, zipCode, memID, active, suspend);
+
+			Stage s = new Stage();
+			s.setScene(new Scene(paneArea));
+			s.show();
+		} else
+			error();
+	}
+
+	/**
+	 * The action event when the user clicks the cancel button.
+	 * 
+	 * @param event
+	 */
+	@FXML
+	void onCancelClick(ActionEvent event) {
+		Pane paneArea = new Pane();
+
+		try {
+			paneArea = (Pane) FXMLLoader.load(graphicsStart.class.getResource("gui/Members/MemberOptionsMenu.fxml"));
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		Stage s = new Stage();
+		s.setScene(new Scene(paneArea));
+		s.setTitle("Member Options");
+		s.show();
+
+		Node source = (Node) event.getSource();
+		Stage stage = (Stage) source.getScene().getWindow();
+		stage.close();
+	}
+
+	/**
+	 * The action event when the user clicks the reset button.
+	 * 
+	 * @param event
+	 */
+	@FXML
+	void onResetClick(ActionEvent event) {
+		Pane paneArea = new Pane();
+
+		try {
+			paneArea = (Pane) FXMLLoader.load(graphicsStart.class.getResource("gui/Members/NewMemberMenu.fxml"));
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+
+		Stage s = new Stage();
+		s.setScene(new Scene(paneArea));
+		s.setTitle("New Member");
+		s.show();
+
+		Node source = (Node) event.getSource();
+		Stage stage = (Stage) source.getScene().getWindow();
+		stage.close();
+	}
+
+	/**
+	 * Returns a boolean of true is member is active.
+	 * 
+	 * @return
+	 */
+	@FXML
+	boolean isActive() {
+		if (activeBox.getValue() == "Active")
+			return true;
+		return false;
+	}
+
+	/**
+	 * Returns a boolean of true is member is suspended.
+	 * 
+	 * @return
+	 */
+	@FXML
+	boolean isSuspended() {
+		if (activeBox.getValue() == "Suspended")
+			return true;
+		return false;
+	}
+
+	/**
+	 * Returns true if all text fields are filled in.
+	 * 
+	 * @return
+	 */
+	@FXML
+	boolean checkEmptyErrors() {
+		String fullStringError = "\nA Member ID" + "\nA Last Name" + "\nA First Name" + "\nA Street Address"
+				+ "\nA City" + "\nA State" + "\nA Zip Code";
+		String errorString = "";
+
+		if (memIDField.getText().isEmpty()) {
+			errorString = errorString + "\nA Member ID";
+		}
+		if (lNameField.getText().isEmpty()) {
+			errorString = errorString + "\nA Last Name";
+		}
+		if (fNameField.getText().isEmpty()) {
+			errorString = errorString + "\nA First Name";
+		}
+		if (stAddrField.getText().isEmpty()) {
+			errorString = errorString + "\nA Street Address";
+		}
+		if (cityField.getText().isEmpty()) {
+			errorString = errorString + "\nA City";
+		}
+		if (stateField.getText().isEmpty()) {
+			errorString = errorString + "\nA State";
+		}
+		if (zipCodeField.getText().isEmpty()) {
+			errorString = errorString + "\nA Zip Code";
+		}
+
+		if (errorString.equals(fullStringError)) {
+			error("Everything!");
+			return false;
+		} else if (!errorString.isEmpty()) {
+			error(errorString);
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	/**
+	 * The action when the user clicks the yes button in the AreYouSureMenu.
+	 * 
+	 * @param button
+	 * @param zipCode
+	 * @param memID
+	 * @param active
+	 * @param suspend
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@FXML
+	void onYesClick(Button button, int zipCode, int memID, boolean active, boolean suspend) {
+		button.setOnAction(new EventHandler() {
+
+			@Override
+			public void handle(Event event) {
+				DCOperator op = ChocAn.getOperator();
+				System.out.println("Clicked Yes to update Member.");
+				String doesNotExist;
+
+				doesNotExist = op.updateMember(new Member(memID, fNameField.getText(), lNameField.getText(),
+						stAddrField.getText(), cityField.getText(), stateField.getText(), zipCode, active, suspend));
+
+				Pane messagePane = null;
+				try {
+					messagePane = (Pane) FXMLLoader
+							.load(graphicsStart.class.getResource("gui/Messages/ErrorMessageMenu.fxml"));
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				Label label;
+
+				label = (Label) messagePane.getChildren().get(1);
+				setMessageLabel(label, doesNotExist);
+
+				Stage s = new Stage();
+				s.setScene(new Scene(messagePane));
+				s.show();
+
+				Node source = (Node) event.getSource();
+				Stage stage = (Stage) source.getScene().getWindow();
+				stage.setTitle("Message");
+				stage.close();
+			}
+
+			/**
+			 * This sets up a success/failure message label in an error message
+			 * menu.
+			 * 
+			 * @param label
+			 * @param doesNotExist
+			 */
+			private void setMessageLabel(Label label, String doesNotExist) {
+				label.setText(doesNotExist);
+
+			}
+
+		});
+	}
+
+	/**
+	 * Sets up label of the AreYouSureMenu.
+	 * 
+	 * @param l
+	 */
+	@FXML
+	void setLabel(Label l) {
+		l.setText(l.getText() + "\nMember ID:\t" + memIDField.getText() + "\nName:\t\t" + fullName + "\nAddress:\t\t"
+				+ stAddrField.getText() + "\nState:\t\t" + stateField.getText() + "\nZip Code:\t\t"
+				+ zipCodeField.getText());
+	}
+
+	/**
+	 * This sets up the error message label in the error message menu.
+	 * 
+	 * @param l
+	 * @param str
+	 */
+	@FXML
+	void setErrorLabel(Label l, String str) {
+		l.setText(l.getText() + "You are missing " + str + " in your updated member.");
+	}
+
+	/**
+	 * Sets up an error message using the ErrorMessageMenu.
+	 */
+	@FXML
+	void error() {
+		// Error Menu setup
+		GridPane paneArea = new GridPane();
+		Label label;
+
+		try {
+			paneArea = (GridPane) FXMLLoader
+					.load(graphicsStart.class.getResource("gui/Messages/ErrorMessageMenu.fxml"));
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		label = (Label) paneArea.getChildren().get(1);
+		setErrorLabel(label, "something");
+		Stage s = new Stage();
+		s.setScene(new Scene(paneArea));
+		s.setTitle("Error...");
+		s.show();
+	}
+
+	/**
+	 * Sets an error message with a string using the ErrorMessageMenu.
+	 * 
+	 * @param str
+	 */
+	@FXML
+	void error(String str) {
+		// Error Menu setup
+		GridPane paneArea = new GridPane();
+		Label label;
+
+		try {
+			paneArea = (GridPane) FXMLLoader
+					.load(graphicsStart.class.getResource("gui/Messages/ErrorMessageMenu.fxml"));
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		label = (Label) paneArea.getChildren().get(1);
+		setErrorLabel(label, str);
+		Stage s = new Stage();
+		s.setScene(new Scene(paneArea));
+		s.setTitle("Error...");
+		s.show();
+	}
+}

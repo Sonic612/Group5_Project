@@ -1,0 +1,136 @@
+package Graphics.Services;
+
+import java.io.IOException;
+
+import Graphics.graphicsStart;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
+
+public class ServiceProviderMenuOptionsController {
+	
+	/**
+	 * The action event when you click the New Service Provider button.
+	 * 
+	 * @param event
+	 */
+	@FXML
+	void onNewSerProvClick(ActionEvent event) {
+		Stage s = new Stage();
+
+		Pane mainpane = null;
+		try {
+			mainpane = (Pane) FXMLLoader.load(graphicsStart.class.getResource("gui/Services/NewServiceProviderMenu.fxml"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		s.setScene(new Scene(mainpane));
+		s.setTitle("New Service Provider");
+		s.show();
+
+		Node source = (Node) event.getSource();
+		Stage stage = (Stage) source.getScene().getWindow();
+		stage.close();
+	}
+	
+	/**
+	 * The action event when you click the Delete Service Provider button.
+	 * 
+	 * @param event
+	 */
+	@FXML
+	void onDelSerProvClick(ActionEvent event) {
+		Stage s = new Stage();
+
+		Pane mainpane = null;
+		try {
+			mainpane = (Pane) FXMLLoader.load(graphicsStart.class.getResource("gui/Services/DeleteServiceProviderMenu.fxml"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		s.setScene(new Scene(mainpane));
+		s.setTitle("Delete Service Provider");
+		s.show();
+
+		Node source = (Node) event.getSource();
+		Stage stage = (Stage) source.getScene().getWindow();
+		stage.close();
+	}
+	
+	/**
+	 * The action event when you click the Update Service Provider button.
+	 * 
+	 * @param event
+	 */
+	@FXML
+	void onUpdSerProvClick(ActionEvent event) {
+		Stage s = new Stage();
+
+		Pane mainpane = null;
+		try {
+			mainpane = (Pane) FXMLLoader.load(graphicsStart.class.getResource("gui/Services/UpdateServiceProviderMenu.fxml"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		s.setScene(new Scene(mainpane));
+		s.setTitle("Update Service Provider");
+		s.show();
+
+		Node source = (Node) event.getSource();
+		Stage stage = (Stage) source.getScene().getWindow();
+		stage.close();
+	}
+	
+	/**
+	 * The action event when you click the Service Provider Record button.
+	 * 
+	 * @param event
+	 */
+	@FXML
+	void onSPRecordClick(ActionEvent event) {
+		Stage s = new Stage();
+
+		Pane mainpane = null;
+		try {
+			mainpane = (Pane) FXMLLoader.load(graphicsStart.class.getResource("gui/Services/ServiceProviderRecordMenu.fxml"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		s.setScene(new Scene(mainpane));
+		s.setTitle("SP Record");
+		s.show();
+
+		Node source = (Node) event.getSource();
+		Stage stage = (Stage) source.getScene().getWindow();
+		stage.close();
+	}
+	
+	/**
+	 * The action event when you click the Back To Menu button.
+	 * 
+	 * @param event
+	 */
+	@FXML
+	void onBTMenuClick(ActionEvent event) {
+		Stage s = new Stage();
+
+		Pane mainpane = null;
+		try {
+			mainpane = (Pane) FXMLLoader.load(graphicsStart.class.getResource("gui/Main/MainMenu.fxml"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		s.setScene(new Scene(mainpane));
+		s.setTitle("Main Menu");
+		s.show();
+
+		Node source = (Node) event.getSource();
+		Stage stage = (Stage) source.getScene().getWindow();
+		stage.close();
+	}
+
+}
